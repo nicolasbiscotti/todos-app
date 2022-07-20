@@ -1,6 +1,7 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import Button from "./Components/Button/Button";
 
 function App() {
   return (
@@ -27,7 +28,7 @@ function App() {
       </div>
 
       <div className="App-add-button">
-        {/* <Button type="add-big" text="Agregar" /> */}
+        <Button {...{attributes: {className: "add-big"}}} >{() => "Agregar"}</Button>
       </div>
     </div>
   );
