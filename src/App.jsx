@@ -1,7 +1,7 @@
-import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import Button from "./Components/Button/Button";
+import Input from "./Components/Input/Input";
 
 function App() {
   return (
@@ -16,19 +16,29 @@ function App() {
       </div>
 
       <div className="App-input-todo-title">
-        {/* <Input
-          value={title}
-          placeholder="Escribí un item"
-          onInputChange={(e) => setTitle(e.target.value)}
-        /> */}
+        <Input>
+          {({ value, touched, errors, handleChange, handleBlur }) => (
+            <label className="App-input">
+              <input
+                name="todo-title"
+                type="text"
+                value={value}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="Escribí un item"
+              />
+              {errors.message && <span>Info: {errors.message}</span>}
+            </label>
+          )}
+        </Input>
       </div>
 
-      <div className="App-todo-list">
-        {/* <TodosList todos={todos} /> */}
-      </div>
+      <div className="App-todo-list">{/* <TodosList todos={todos} /> */}</div>
 
       <div className="App-add-button">
-        <Button {...{attributes: {className: "add-big"}}} >{() => "Agregar"}</Button>
+        <Button {...{ attributes: { className: "add-big" } }}>
+          {() => "Agregar"}
+        </Button>
       </div>
     </div>
   );

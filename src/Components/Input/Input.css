@@ -1,0 +1,29 @@
+.App-input {
+  font-size: 14px;
+  position: relative;
+  --field-padding: 12px;
+}
+.App-input input {
+  border: none;
+  -webkit-appearance: none;
+  -ms-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: #f2f2f2;
+  padding: var(--field-padding);
+  border-radius: 3px;
+  width: 250px;
+  font-size: 14px;
+}
+.App-input .placeholder {
+  position: absolute;
+  left: var(--field-padding);
+  /* bottom: 50%; */
+  top: 8px;  
+  transform: translateY(-50%);
+  width: calc(100% - (var(--field-padding)));  
+  color: #aaa;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

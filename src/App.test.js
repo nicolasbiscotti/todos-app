@@ -1,15 +1,18 @@
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import App from "./App";
 
 describe("App Component", () => {
   let titles = ["Todo", "¿Qué cosa tenés que terminar hoy?"];
 
-  it("renders without crashing", () => {
+  it("renders without crashing", async () => {
     render(<App />);
-
-    const logo = screen.getByRole("img");
-    const headings = screen.getAllByRole("heading");
+    let logo;
+    let headings;
+    await waitFor(() => {
+      logo = screen.getByRole("img");
+      headings = screen.getAllByRole("heading");
+    });
 
     expect(logo).toHaveAttribute("alt", "logo");
     expect(headings).toHaveLength(titles.length);
