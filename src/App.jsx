@@ -2,6 +2,10 @@ import logo from "./logo.svg";
 import "./App.css";
 import Button from "./Components/Button/Button";
 import TitleInput from "./Components/Input/TitleInput";
+import { createDummyData } from "./Components/ItemList/ItemList.test";
+import TodosList from "./Components/TodoList/TodoList";
+
+const dummyList = createDummyData()
 
 function App() {
   return (
@@ -19,7 +23,9 @@ function App() {
         <TitleInput errorMessage="el título debe completarse" />
       </div>
 
-      <div className="App-todo-list">{/* <TodosList todos={todos} /> */}</div>
+      <div className="App-todo-list">
+        {<TodosList initialList={dummyList} />}
+      </div>
 
       <div className="App-add-button">
         <Button {...{ attributes: { className: "add-big" } }}>

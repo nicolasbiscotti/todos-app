@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./ItemList.css";
-export default function TodosList({ initialList, children }) {
+export default function ItemList({ initialList, children }) {
   const items = initialList;
 
   const [mouseIsOverId, setMouseIsOverId] = useState(false);
