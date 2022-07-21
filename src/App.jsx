@@ -2,10 +2,11 @@ import logo from "./logo.svg";
 import "./App.css";
 import Button from "./Components/Button/Button";
 import TitleInput from "./Components/Input/TitleInput";
-import { createDummyData } from "./Components/ItemList/ItemList.test";
-import TodosList from "./Components/TodoList/TodoList";
+import TodosList from "./Components/ItemList/TodoList.jsx";
+import { createDummyData } from "./fake/fakeList";
 
-const dummyList = createDummyData()
+
+const fakeList = createDummyData();
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
       </div>
 
       <div className="App-todo-list">
-        {<TodosList initialList={dummyList} />}
+        <TodosList initialList={fakeList} />
       </div>
 
       <div className="App-add-button">

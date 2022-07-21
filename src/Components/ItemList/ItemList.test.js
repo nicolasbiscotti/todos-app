@@ -1,24 +1,11 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import ItemList from "./ItemList";
-import { faker } from "@faker-js/faker";
 import Button from "../Button/Button";
+import { faker } from "@faker-js/faker";
+import { createDummyData } from "../../fake/fakeList";
 
-export const createDummyData = () => {
-  const size = faker.datatype.number({
-    min: 3,
-    max: 10,
-  });
 
-  return [...Array(size)].map(() => {
-    return {
-      id: faker.datatype.uuid(),
-      completed: faker.datatype.boolean(),
-      message: faker.lorem.sentence(3),
-      title: faker.lorem.sentence(4),
-    };
-  });
-};
 
 describe("ItemList component", () => {
   

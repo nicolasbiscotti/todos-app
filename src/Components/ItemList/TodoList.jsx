@@ -1,7 +1,7 @@
 import Button from "../Button/Button";
 import ItemList from "./ItemList";
 
-const TodoList = ({ initialList }) => {
+const TodoList = ({ initialList }) => (
   <ItemList initialList={initialList}>
     {({ items, handleMouseOver, handleMouseOut, mouseIsOverId }) => {
       const todoList = items.map((todo) => (
@@ -27,6 +27,6 @@ const TodoList = ({ initialList }) => {
 
       return <ul className="Item-list">{todoList}</ul>;
     }}
-  </ItemList>;
-};
+  </ItemList>
+);
 export default TodoList;
