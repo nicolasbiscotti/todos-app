@@ -12,7 +12,7 @@ describe("Button component", () => {
   it("should render the child function call and set the attributes to the button", async () => {
     const { text, attributes } = testButtonSpec;
 
-    render(<Button {...testButtonSpec}>{() => text}</Button>);
+    render(<Button attributes={attributes}>{() => text}</Button>);
     let button;
     await waitFor(() => (button = screen.getByRole("button")));
 

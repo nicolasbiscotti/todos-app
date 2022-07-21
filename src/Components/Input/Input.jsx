@@ -15,7 +15,7 @@ const Input = ({ initialValue, errorMessage, children }) => {
     return { ...initialState, value: initialValue };
   });
 
-  const errorMsg = errorMessage || "el título no puede estar vacío";
+  const errorMsg = errorMessage || "default error message";
 
   const handleChange = (e) => {
     const value = e.target.value;

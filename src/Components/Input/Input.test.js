@@ -2,9 +2,9 @@ import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import Input from "./Input";
 
-describe("Button component", () => {
+describe("Input component", () => {
   const placeholder = "Escribí un item";
-  const errorMessage = "el título no puede estar vacío";
+  const errorMessage = "custom error message";
   beforeEach(() => {
     render(
       <Input errorMessage={errorMessage}>

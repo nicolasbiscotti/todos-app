@@ -1,7 +1,7 @@
 import logo from "./logo.svg";
 import "./App.css";
 import Button from "./Components/Button/Button";
-import Input from "./Components/Input/Input";
+import TitleInput from "./Components/Input/TitleInput";
 
 function App() {
   return (
@@ -16,21 +16,7 @@ function App() {
       </div>
 
       <div className="App-input-todo-title">
-        <Input>
-          {({ value, touched, errors, handleChange, handleBlur }) => (
-            <label className="App-input">
-              <input
-                name="todo-title"
-                type="text"
-                value={value}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="Escribí un item"
-              />
-              {errors.message && <span>Info: {errors.message}</span>}
-            </label>
-          )}
-        </Input>
+        <TitleInput errorMessage="el título debe completarse" />
       </div>
 
       <div className="App-todo-list">{/* <TodosList todos={todos} /> */}</div>
