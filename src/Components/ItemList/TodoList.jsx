@@ -16,7 +16,7 @@ const TodoList = ({ initialList }) => (
             <input
               type="checkbox"
               checked={todo.completed}
-              onChange={() => checkboxChange(todo)}
+              onChange={() => handleEdit(todo)}
             />
             <span>{todo.title}</span>
           </label>
