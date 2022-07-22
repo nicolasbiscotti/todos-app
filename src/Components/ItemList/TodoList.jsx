@@ -1,27 +1,32 @@
 import Button from "../Button/Button";
 import ItemList from "./ItemList";
 
-const TodoList = ({ initialList }) => (
-  <ItemList initialList={initialList}>
-    {({ items, handleMouseOver, handleMouseOut, mouseIsOverId }) => {
+const TodoList = ({ initialList, onEditItem, onDeleteItem }) => (
+  <ItemList {...{ initialList, onEditItem, onDeleteItem }}>
+    {({ items, mouseOverId }) => {
       const todoList = items.map((todo) => (
         <li
           key={todo.id}
-          data-testid={mouseIsOverId === todo.id && "mouseover"}
+          data-testid={mouseOverId === todo.id && "mouseover"}
           className="Item"
-          onMouseOver={() => handleMouseOver(todo)}
-          onMouseOut={handleMouseOut}
+          onMouseOver={todo.setMouseOver}
+          onMouseOut={todo.setMouseOut}
         >
           <label className="Item-title round">
             <input
               type="checkbox"
+              name="completed"
               checked={todo.completed}
-              onChange={() => handleEdit(todo)}
+              onChange={todo.editItem}
             />
             <span>{todo.title}</span>
           </label>
 
-          {mouseIsOverId === todo.id && <Button>{() => "delete"}</Button>}
+          {mouseOverId === todo.id && (
+            <Button attributes={{ onClick: todo.deleteItem }}>
+              {() => "delete"}
+            </Button>
+          )}
         </li>
       ));
 

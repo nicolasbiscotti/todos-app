@@ -3,7 +3,7 @@ import "./App.css";
 import Button from "./Components/Button/Button";
 import TitleInput from "./Components/Input/TitleInput";
 import TodosList from "./Components/ItemList/TodoList.jsx";
-import { createDummyData } from "./fake/fakeList";
+import { createDummyData } from "./test/fake/fakeList";
 
 
 const fakeList = createDummyData();

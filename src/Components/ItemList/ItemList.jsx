@@ -1,16 +1,22 @@
 import { useState } from "react";
 import "./ItemList.css";
-export default function ItemList({ initialList, children }) {
-  const items = initialList;
+function ItemList({ initialList, onEditItem, onDeleteItem, children }) {
+  const [mouseOverId, setMouseOverId] = useState(false);
 
-  const [mouseIsOverId, setMouseIsOverId] = useState(false);
+  const items = initialList.map((item) => ({
+    ...item,
+    setMouseOver: () => setMouseOverId(item.id),
+    setMouseOut: () => setMouseOverId(false),
+    editItem: (event) => {
+      const target = event.target;
+      const value = target.type === "checkbox" ? target.checked : target.value;
+      const name = target.name;
+      item[name] = value;
+      onEditItem(item);
+    },
+    deleteItem: () => onDeleteItem(item),
+  }));
 
-  const handleMouseOver = (itemToPutOver) => {
-    setMouseIsOverId(itemToPutOver.id);
-  };
-  const handleMouseOut = () => {
-    setMouseIsOverId(false);
-  };
-
-  return children({ items, mouseIsOverId, handleMouseOver, handleMouseOut });
+  return children({ items, mouseOverId });
 }
+export default ItemList;
