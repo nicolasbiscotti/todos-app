@@ -2,7 +2,7 @@ import { render } from "@testing-library/react";
 import Button from "../../Components/Button/Button";
 import ItemList from "../../Components/ItemList/ItemList";
 
-function givenThat(itemList) {
+function givenThatList(itemList) {
   const that = {};
 
   const alreadyHas = (item) => {
@@ -47,4 +47,4 @@ function givenThat(itemList) {
   return that;
 }
 
-export default givenThat;
+export default givenThatList;
