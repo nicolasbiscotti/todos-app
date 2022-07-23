@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import Button from "./Button";
 
@@ -13,8 +12,7 @@ describe("Button component", () => {
     const { text, attributes } = testButtonSpec;
 
     render(<Button attributes={attributes}>{() => text}</Button>);
-    let button;
-    await waitFor(() => (button = screen.getByRole("button")));
+    const button = screen.getByRole("button");
 
     expect(button).toHaveTextContent(text);
     expect(button).toHaveClass(attributes.className);
@@ -28,8 +26,7 @@ describe("Button component", () => {
     const config = { attributes: { onClick: callback } };
 
     render(<Button {...config}>{() => text}</Button>);
-    let button;
-    await waitFor(() => (button = screen.getByRole("button")));
+    const button = screen.getByRole("button");
     fireEvent.click(button);
 
     expect(fn).toHaveBeenCalledTimes(1);
