@@ -8,6 +8,7 @@ const givenThat = (jsxComponent) => {
     };
   };
   given.willBeRendered = willBeRendered;
+  
   return given;
 };
 export default givenThat;

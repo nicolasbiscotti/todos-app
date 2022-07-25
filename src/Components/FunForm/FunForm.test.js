@@ -2,6 +2,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import givenThat from "../../test/givens/givenThat";
 import verifyThat from "../../test/verifies/verifyThat";
+import verifyThatFunction from "../../test/verifies/verifyThatFunction";
 import FunForm from "./FunForm";
 
 describe("FunForm Component", () => {
@@ -13,7 +14,7 @@ describe("FunForm Component", () => {
 
     givenThat(<TestForm />).willBeRendered();
 
-    verifyThat(screen).displaysText("heading", textContent);
+    verifyThat(screen).shouldDisplayText("heading", textContent);
   });
 
   it("should display the text that a user types in an input:text", async () => {
@@ -24,14 +25,14 @@ describe("FunForm Component", () => {
     const TestForm = () => {
       return (
         <FunForm initialValues={{ title: titleInitialValue }}>
-          {({ values, onChange }) => (
+          {({ values, handleChange }) => (
             <label>
               {accessibleName}
               <input
                 type="text"
                 name={inputName}
                 value={values.title}
-                onChange={onChange}
+                onChange={handleChange}
               ></input>
             </label>
           )}
@@ -46,8 +47,32 @@ describe("FunForm Component", () => {
     await user.click(screen.getByRole("textbox", { name: accessibleName }));
     await user.keyboard(expectedValue);
 
-    verifyThat(screen).displayValue(expectedValue);
+    verifyThat(screen).shouldDisplayValue(expectedValue);
+  });
 
-    // verifyThat(screen).afterTheUserTypeIn();
+  it("should call the submit function with the current values of the state, when the form is submitted", async () => {
+    const submitFunction = jest.fn();
+    const TestForm = () => {
+      return (
+        <FunForm
+          initialValues={{ title: "This is a title." }}
+          onSubmit={submitFunction}
+        >
+          {({ handleSubmit }) => (
+            <button onClick={handleSubmit}>Agregar</button>
+          )}
+        </FunForm>
+      );
+    };
+
+    givenThat(<TestForm />).willBeRendered();
+
+    await verifyThatFunction(submitFunction)
+      .afterUserClickedOn({
+        role: "button",
+        accessibleName: "Agregar",
+      })
+      .shouldBeCalledTimes(1)
+      .withArguments({ title: "This is a title." });
   });
 });

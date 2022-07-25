@@ -1,13 +1,18 @@
 import { useState } from "react";
 
-function FunForm({ initialValues, children }) {
+function FunForm({ initialValues, onSubmit, children }) {
   const [values, setValues] = useState(initialValues);
-  const onChange = (e) => {
+  const handleChange = (e) => {
     const name = e.target.name;
     const value = e.target.value;
     setValues((prevState) => ({ ...prevState, [name]: value }));
   };
-  return children({ values, onChange });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // validate
+    onSubmit(values);
+  };
+  return children({ values, handleChange, handleSubmit });
 }
 
 export default FunForm;
