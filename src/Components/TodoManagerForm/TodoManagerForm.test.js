@@ -24,8 +24,8 @@ describe("TodoManagerForm Component", () => {
 
   afterEach(() => {
     db.clear();
-    cache.clear();
     server.resetHandlers();
+    cache.clear();
   });
 
   afterAll(() => server.close());

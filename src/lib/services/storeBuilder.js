@@ -72,6 +72,9 @@ const todoListSlice = (initialState) =>
         .addCase(fetchTodoList.pending, (state, action) => {
           return { ...state, status: "pending" };
         })
+        .addCase(fetchTodoList.rejected, (state, action) => {
+          return { ...state, status: "rejected" };
+        })
         .addDefaultCase((state, action) => ({ ...state }));
     },
   });
