@@ -2,26 +2,25 @@ import { useEffect, useState } from "react";
 import FunForm from "../FunForm/FunForm";
 import TodoList from "../ItemList/TodoList";
 
-const TodoManagerForm = ({ todoService, store }) => {
-  const [list, setList] = useState(store.getState().todoList.list);
-  const [status, setStatus] = useState(store.getState().todoList.status);
+const TodoManagerForm = ({ todoService }) => {
+  const [todoList, setTodoList] = useState(todoService.getCurrentList());
+  const [todoListStatus, setTodoListStatus] = useState("pending");
 
-  store.subscribe(() => setStatus(store.getState().todoList.status));
-  store.subscribe(() => setList(store.getState().todoList.list));
+  todoService.subscribe("status", setTodoListStatus);
+  todoService.subscribe("list", setTodoList);
 
   useEffect(() => {
-    todoService.list(store.getState().user.userId);
+    todoService.list();
   }, []);
 
   return (
     <FunForm>
       {() => {
-        console.log(store.getState());
-        return status === "pending" ? (
-          <h1>Loading</h1>
-        ) : (
-          <TodoList initialList={list}></TodoList>
-        );
+        todoService.logFullState();
+        if (todoListStatus === "pending") {
+          return <div>Loading</div>;
+        }
+        return <TodoList initialList={todoList}></TodoList>;
       }}
     </FunForm>
   );

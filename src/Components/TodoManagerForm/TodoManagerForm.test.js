@@ -9,7 +9,6 @@ import { fakeServer } from "../../test/fake/fakeServer/server";
 import { givenThatCache } from "../../test/givens/givenThatCache";
 import { givenThatDB } from "../../test/givens/givenThatDB";
 import TodoManagerForm from "./TodoManagerForm";
-import userEvent from "@testing-library/user-event";
 import { createDummyData } from "../../test/fake/fakeList";
 
 describe("TodoManagerForm Component", () => {
@@ -18,8 +17,8 @@ describe("TodoManagerForm Component", () => {
     todoList: createDummyData(),
   };
   const db = fakeDb();
-  const cache = cacheBuilder().build();
   const server = fakeServer(db);
+  const cache = cacheBuilder().build();
 
   beforeAll(() => server.listen());
 
@@ -44,9 +43,7 @@ describe("TodoManagerForm Component", () => {
     const todoRepository = aTodoRepository("");
     const todoService = aTodoService(todoRepository, store);
 
-    const { getByRole } = render(
-      <TodoManagerForm todoService={todoService} store={store} />
-    );
+    const { getByRole } = render(<TodoManagerForm todoService={todoService} />);
 
     const list = await waitFor(() => getByRole("list"));
 

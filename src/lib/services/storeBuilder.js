@@ -3,8 +3,11 @@ import {
   configureStore,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
+
 const stateBuilder = () => {
   const config = {};
+  const builder = {};
+
   const state = {
     user: {
       userId: "",
@@ -15,7 +18,6 @@ const stateBuilder = () => {
       status: "idle",
     },
   };
-  const builder = {};
 
   const cache = (cache) => {
     config.cache = cache;
@@ -75,8 +77,6 @@ const todoListSlice = (initialState) =>
   });
 
 const storeBuilder = (cache) => {
-  const builder = {};
-
   const build = () => {
     const preloadedState = stateBuilder().cache(cache).build();
     const user = userSlice(preloadedState.user).reducer;
@@ -90,7 +90,7 @@ const storeBuilder = (cache) => {
     return store;
   };
 
-  builder.build = build;
+  const builder = { build };
 
   return builder;
 };
