@@ -41,10 +41,10 @@ const stateBuilder = () => {
 
 export const fetchUserId = createAsyncThunk("user/fetchUserId", async () => {});
 
-const userSlice = (initialState) =>
+const userSlice = (cache) =>
   createSlice({
     name: "user",
-    initialState,
+    initialState: () => stateBuilder().cache(cache).build().user,
     extraReducers: (builder) => {
       builder
         .addCase(fetchUserId.fulfilled, (state, action) => {})
@@ -60,10 +60,10 @@ export const fetchTodoList = createAsyncThunk(
     return todoList;
   }
 );
-const todoListSlice = (initialState) =>
+const todoListSlice = (cache) =>
   createSlice({
     name: "todoList",
-    initialState,
+    initialState: () => stateBuilder().cache(cache).build().todoList,
     extraReducers: (builder) => {
       builder
         .addCase(fetchTodoList.fulfilled, (state, action) => {
@@ -81,9 +81,8 @@ const todoListSlice = (initialState) =>
 
 const storeBuilder = (cache) => {
   const build = () => {
-    const preloadedState = stateBuilder().cache(cache).build();
-    const user = userSlice(preloadedState.user).reducer;
-    const todoList = todoListSlice(preloadedState.todoList).reducer;
+    const user = userSlice(cache).reducer;
+    const todoList = todoListSlice(cache).reducer;
     const store = configureStore({
       reducer: {
         user,

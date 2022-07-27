@@ -1,20 +1,22 @@
 export const givenThatDB = (db) => {
   const config = {};
-  const given = {};
-
-  const alreadyHasUserId = (userId) => {
-    config.userId = userId;
-    db.userIdGeneratorWillGenerate(userId);
-    return given;
-  };
 
   const withTodoList = (todoList) => {
+    db.willCreateUser(config.userId);
     db.createUser();
     db.setTodoListForUser(config.userId, todoList);
   };
 
-  given.alreadyHasUserId = alreadyHasUserId;
-  given.withTodoList = withTodoList;
+  const alreadyHasUserId = (userId) => {
+    config.userId = userId;
+    return { withTodoList };
+  };
+
+  const willCreateUser = (userId) => {
+    db.willCreateUser(userId);
+  };
+
+  const given = { alreadyHasUserId, willCreateUser };
 
   return given;
 };

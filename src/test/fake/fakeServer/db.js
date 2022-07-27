@@ -5,8 +5,6 @@ export const fakeDb = (
   userIdGenerator = fakeIdGenerator(),
   todoIdGenerator = fakeIdGenerator()
 ) => {
-  const db = {};
-
   let storage = {};
 
   const createUser = () => {
@@ -33,16 +31,22 @@ export const fakeDb = (
     storage[userId] = todoList;
   };
 
-  const userIdGeneratorWillGenerate = (userId) => userIdGenerator.add(userId);
+  const willCreateUser = (userId) => userIdGenerator.add(userId);
+
+  const willCreateTodo = (todoId) => todoIdGenerator.add(todoId);
+
   const clear = () => {
     storage = {};
   };
 
-  db.createUser = createUser;
-  db.getTodosForUser = getTodosForUser;
-  db.setTodoListForUser = setTodoListForUser;
-  db.userIdGeneratorWillGenerate = userIdGeneratorWillGenerate;
-  db.clear = clear;
+  const db = {
+    createUser,
+    getTodosForUser,
+    setTodoListForUser,
+    willCreateUser,
+    willCreateTodo,
+    clear,
+  };
 
   return db;
 };

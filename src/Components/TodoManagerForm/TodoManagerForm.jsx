@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import FunForm from "../FunForm/FunForm";
 import TodoList from "../ItemList/TodoList";
 
-const TodoManagerForm = ({ todoService }) => {
+const TodoManagerForm = ({ todoService, children }) => {
   const [todoList, setTodoList] = useState(todoService.getCurrentList());
   const [todoListStatus, setTodoListStatus] = useState("pending");
 
@@ -13,16 +13,6 @@ const TodoManagerForm = ({ todoService }) => {
     todoService.list();
   }, []);
 
-  return (
-    <FunForm>
-      {() => {
-        todoService.logFullState();
-        if (todoListStatus === "pending") {
-          return <div>Loading</div>;
-        }
-        return <TodoList initialList={todoList}></TodoList>;
-      }}
-    </FunForm>
-  );
+  return children({ todoList, todoListStatus });
 };
 export default TodoManagerForm;

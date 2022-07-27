@@ -1,4 +1,23 @@
-import { fetchTodoList } from "./storeBuilder";
+import aTodoRepository from "../api/todoRepository";
+import storeBuilder, { fetchTodoList } from "./storeBuilder";
+
+const configureTodoService = () => {
+  const config = {};
+
+  const aStoreInitializedWith = (cache) => {
+    const { baseURL } = config;
+    const store = storeBuilder(cache).build();
+    const todoRepository = aTodoRepository(baseURL);
+    return aTodoService(todoRepository, store);
+  };
+
+  const withTodoRepoPointTo = (baseURL) => {
+    config.baseURL = baseURL;
+    return { aStoreInitializedWith };
+  };
+
+  return { withTodoRepoPointTo };
+};
 
 const aTodoService = (todoRepository, store) => {
   const listeners = [];
@@ -32,4 +51,4 @@ const aTodoService = (todoRepository, store) => {
   return service;
 };
 
-export default aTodoService;
+export default configureTodoService;
