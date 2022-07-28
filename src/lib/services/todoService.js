@@ -1,19 +1,18 @@
 import aTodoRepository from "../api/todoRepository";
-import storeBuilder, { fetchTodoList } from "./storeBuilder";
+import storeBuilder, { fetchTodoList, fetchUserId } from "./storeBuilder";
 
 const configureTodoService = () => {
   const config = {};
 
-  const aStoreInitializedWith = (cache) => {
+  const aStore = (store) => {
     const { baseURL } = config;
-    const store = storeBuilder(cache).build();
     const todoRepository = aTodoRepository(baseURL);
     return aTodoService(todoRepository, store);
   };
 
   const withTodoRepoPointTo = (baseURL) => {
     config.baseURL = baseURL;
-    return { aStoreInitializedWith };
+    return { aStore };
   };
 
   return { withTodoRepoPointTo };
@@ -33,9 +32,12 @@ const aTodoService = (todoRepository, store) => {
   const getCurrentList = () => store.getState().todoList.list;
   const getCurrentListStatus = () => store.getState().todoList.status;
 
-  const list = () => {
+  const list = async () => {
     const { userId } = store.getState().user;
-    store.dispatch(fetchTodoList({ userId, todoRepository }));
+    const list = await store
+      .dispatch(fetchTodoList({ userId, todoRepository }))
+      .unwrap();
+    return list;
   };
 
   const logFullState = () => console.log(store.getState());

@@ -39,7 +39,13 @@ const stateBuilder = () => {
   return builder;
 };
 
-export const fetchUserId = createAsyncThunk("user/fetchUserId", async () => {});
+export const fetchUserId = createAsyncThunk(
+  "user/fetchUserId",
+  async (userRepository) => {
+    const userId = await userRepository.createUser();
+    return userId;
+  }
+);
 
 const userSlice = (cache) =>
   createSlice({
@@ -47,9 +53,18 @@ const userSlice = (cache) =>
     initialState: () => stateBuilder().cache(cache).build().user,
     extraReducers: (builder) => {
       builder
-        .addCase(fetchUserId.fulfilled, (state, action) => {})
-        .addCase(fetchUserId.pending, (state, action) => {})
-        .addDefaultCase((state, action) => {});
+        .addCase(fetchUserId.fulfilled, (state, action) => {
+          const userId = action.payload;
+          cache.setItem("userId", JSON.stringify(userId));
+          return { ...state, userId, status: "idle" };
+        })
+        .addCase(fetchUserId.pending, (state, action) => {
+          return { ...state, status: "pending" };
+        })
+        .addCase(fetchUserId.rejected, (state, action) => {
+          return { ...state, status: "rejected" };
+        })
+        .addDefaultCase((state, action) => state);
     },
   });
 
@@ -75,7 +90,7 @@ const todoListSlice = (cache) =>
         .addCase(fetchTodoList.rejected, (state, action) => {
           return { ...state, status: "rejected" };
         })
-        .addDefaultCase((state, action) => ({ ...state }));
+        .addDefaultCase((state, action) => state);
     },
   });
 

@@ -10,6 +10,9 @@ import configureTodoService from "../../lib/services/todoService";
 import TodoManagerForm from "./TodoManagerForm";
 import FunForm from "../FunForm/FunForm";
 import TodoList from "../ItemList/TodoList";
+import ItemList from "../ItemList/ItemList";
+import configureUserService from "../../lib/services/userService";
+import storeBuilder from "../../lib/services/storeBuilder";
 
 describe("TodoManagerForm Component", () => {
   const user = {
@@ -34,9 +37,15 @@ describe("TodoManagerForm Component", () => {
     givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(user.todoList);
     givenThatCache(cache).alreadyHasItem("userId").withValue(user.userId);
 
+    const store = storeBuilder(cache).build();
+
     const todoService = configureTodoService()
       .withTodoRepoPointTo("")
-      .aStoreInitializedWith(cache);
+      .aStore(store);
+
+    const userService = configureUserService()
+      .withUserRepoPointTo("")
+      .aStore(store);
 
     const expectedAccessibleName = listAccessibleName()
       .title("")
@@ -44,11 +53,10 @@ describe("TodoManagerForm Component", () => {
       .build();
 
     const { getByRole } = render(
-      <TodoManagerForm todoService={todoService}>
+      <TodoManagerForm userService={userService} todoService={todoService}>
         {({ todoList, todoListStatus }) => (
           <FunForm>
             {() => {
-              todoService.logFullState();
               if (todoListStatus === "pending") {
                 return <div>Loading</div>;
               }
@@ -64,23 +72,38 @@ describe("TodoManagerForm Component", () => {
     expect(list).toHaveTextContent(expectedAccessibleName);
   });
 
-  xit("should fetch a new userId and cache it", async () => {
+  it("should fetch a new userId and cache it", async () => {
     givenThatDB(db).willCreateUser(user.userId);
+
+    const store = storeBuilder(cache).build();
 
     const todoService = configureTodoService()
       .withTodoRepoPointTo("")
-      .aStoreInitializedWith(cache);
+      .aStore(store);
+
+    const userService = configureUserService()
+      .withUserRepoPointTo("")
+      .aStore(store);
 
     const { getByRole } = render(
-      <TodoManagerForm todoService={todoService}>
-        {({ todoList, todoListStatus }) => (
+      <TodoManagerForm userService={userService} todoService={todoService}>
+        {({ userId, todoList, todoListStatus }) => (
           <FunForm>
             {() => {
-              todoService.logFullState();
               if (todoListStatus === "pending") {
                 return <div>Loading</div>;
               }
-              return <TodoList initialList={todoList} />;
+              return (
+                <ItemList initialList={todoList}>
+                  {({ items }) => (
+                    <ul aria-label={`Todo list of ${userId}`}>
+                      {items.map((item) => (
+                        <li>{item.title}</li>
+                      ))}
+                    </ul>
+                  )}
+                </ItemList>
+              );
             }}
           </FunForm>
         )}
@@ -90,5 +113,8 @@ describe("TodoManagerForm Component", () => {
     const list = await waitFor(() =>
       getByRole("list", { name: `Todo list of ${user.userId}` })
     );
+    
+    expect(list).not.toHaveTextContent();
+    expect(JSON.parse(cache.getItem("userId"))).toEqual(user.userId);
   });
 });

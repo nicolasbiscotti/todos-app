@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
-import FunForm from "../FunForm/FunForm";
-import TodoList from "../ItemList/TodoList";
 
-const TodoManagerForm = ({ todoService, children }) => {
+const TodoManagerForm = ({ userService, todoService, children }) => {
+  const [userId, setUserId] = useState(userService.getCurrentUser());
   const [todoList, setTodoList] = useState(todoService.getCurrentList());
   const [todoListStatus, setTodoListStatus] = useState("pending");
 
-  todoService.subscribe("status", setTodoListStatus);
-  todoService.subscribe("list", setTodoList);
-
   useEffect(() => {
-    todoService.list();
-  }, []);
+    if (userId === "") {
+      userService.create().then((userId) => setUserId(userId));
+    } else {
+      todoService.list().then((list) => {
+        setTodoList(list);
+        setTodoListStatus("idle");
+      });
+    }
+  }, [userId]);
 
-  return children({ todoList, todoListStatus });
+  return children({ userId, todoList, todoListStatus });
 };
 export default TodoManagerForm;
