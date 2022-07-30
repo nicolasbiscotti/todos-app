@@ -7,10 +7,12 @@ export const fakeDb = (
 ) => {
   let storage = {};
 
+  const contains = (userId) => storage[userId] !== undefined;
+
   const createUser = () => {
     try {
       const userId = userIdGenerator.next();
-      if (storage[userId]) {
+      if (contains(userId)) {
         throw new Error(FakeMessages.USER_ID_ALREADY_EXISTS);
       }
       storage[userId] = [];
@@ -21,14 +23,14 @@ export const fakeDb = (
   };
 
   const getTodosForUser = (userId) => {
-    if (!storage[userId]) {
+    if (!contains(userId)) {
       throw new Error(FakeMessages.USER_ID_NOT_FOUND);
     }
     return storage[userId];
   };
 
   const setTodoListForUser = (userId, todoList) => {
-    if (!storage[userId]) {
+    if (!contains(userId)) {
       throw new Error(FakeMessages.USER_ID_NOT_FOUND);
     }
     storage[userId] = todoList;

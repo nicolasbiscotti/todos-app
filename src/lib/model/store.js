@@ -6,7 +6,7 @@ import {
 
 const addTodo = createAsyncThunk("addTodo", async ({ title, message }) => {});
 
-export const deleteTodo = createAsyncThunk("deleteTodo", async (todoId) => {});
+const deleteTodo = createAsyncThunk("deleteTodo", async (todoId) => {});
 
 const setCompletion = createAsyncThunk(
   "setCompletion",
@@ -30,6 +30,9 @@ const fetchInitialState = async (cache) => {
 
 const userCases = (builder) => {
   builder
+    .addCase(fetchTodoList.fulfilled, (state, action) => {
+      return { ...state, todoList: action.payload };
+    })
     .addCase(resetTodoList.fulfilled, (state, action) => {
       return { ...state, todoList: [] };
     })
@@ -38,6 +41,15 @@ const userCases = (builder) => {
     })
     .addDefaultCase((state, action) => state);
 };
+
+export const fetchTodoList = createAsyncThunk(
+  "fetchTodoList",
+  async (userId) => {
+    const response = await fetch(`/todo/${userId}`);
+    const todoList = await response.json();
+    return todoList;
+  }
+);
 
 export const resetTodoList = createAsyncThunk(
   "resetTodoList",
