@@ -1,20 +1,9 @@
-import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
-const TodoManagerForm = ({ userService, todoService, children }) => {
-  const [userId, setUserId] = useState(userService.getCurrentUser());
-  const [todoList, setTodoList] = useState(todoService.getCurrentList());
-  const [todoListStatus, setTodoListStatus] = useState("pending");
-
-  useEffect(() => {
-    if (userId === "") {
-      userService.create().then((userId) => setUserId(userId));
-    } else {
-      todoService.list().then((list) => {
-        setTodoList(list);
-        setTodoListStatus("idle");
-      });
-    }
-  }, [userId]);
+const TodoManagerForm = ({ children }) => {
+  const userId = useSelector((state) => state.userId);
+  const todoList = useSelector((state) => state.todoList);
+  const todoListStatus = useSelector((state) => state.status);
 
   return children({ userId, todoList, todoListStatus });
 };

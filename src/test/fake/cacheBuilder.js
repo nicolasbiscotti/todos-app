@@ -1,6 +1,6 @@
 const cacheBuilder = () => {
   const builder = {};
-  
+
   let store = {};
   const cache = {
     getItem: function (key) {
@@ -17,16 +17,10 @@ const cacheBuilder = () => {
     },
   };
 
-  function setItem(key, rawValue) {
-    store[key] = JSON.stringify(rawValue);
-    return builder;
-  }
-
   function build() {
     return cache;
   }
 
-  builder.setItem = setItem;
   builder.build = build;
 
   return builder;
