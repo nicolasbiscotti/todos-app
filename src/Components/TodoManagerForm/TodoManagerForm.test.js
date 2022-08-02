@@ -32,7 +32,7 @@ describe("TodoManagerForm Component", () => {
 
   afterAll(() => server.close());
 
-  it("should display the list of an existing cached user", async () => {
+  xit("should display the list of an existing cached user", async () => {
     givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(user.todoList);
     givenThatCache(cache).alreadyHasItem("userId").withValue(user.userId);
 
@@ -65,7 +65,7 @@ describe("TodoManagerForm Component", () => {
     expect(list).toHaveTextContent(expectedAccessibleName);
   });
 
-  it("should fetch a new userId and cache it", async () => {
+  xit("should fetch a new userId and cache it", async () => {
     givenThatDB(db).willCreateUser(user.userId);
 
     const store = await storeBuilder().cache(cache).build();

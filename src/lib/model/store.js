@@ -4,6 +4,8 @@ import {
   createReducer,
 } from "@reduxjs/toolkit";
 
+const user = { userId: "", todoList: [], status: "idle" };
+
 const addTodo = createAsyncThunk("addTodo", async ({ title, message }) => {});
 
 const deleteTodo = createAsyncThunk("deleteTodo", async (todoId) => {});
@@ -13,90 +15,69 @@ const setCompletion = createAsyncThunk(
   async ({ completion, todoId }) => {}
 );
 
-const user = { userId: "", todoList: [], status: "idle" };
+const setUser = ({ storage, api }) =>
+  createAsyncThunk("setUser", async () => {
+    const userId = JSON.parse(storage.getItem("userId"));
+    if (!userId) {
+      const userId = await api.user.createUser();
+      storage.setItem("userId", JSON.stringify(userId));
+      return userId;
+    }
+    return userId;
+  });
 
-const fetchInitialState = async (cache) => {
-  const userId = JSON.parse(cache.getItem("userId"));
-  if (!userId) {
-    const response = await fetch("/userId");
-    const userId = await response.json();
-    cache.setItem("userId", JSON.stringify(userId));
-    return { userId, todoList: [], status: "idle" };
-  }
-  const response = await fetch(`/todo/${userId}`);
-  const todoList = await response.json();
-  return { userId, todoList, status: "idle" };
-};
+const getTodosForUser = ({ api }) =>
+  createAsyncThunk("getTodosForUser", async (userId) => {
+    const todoList = await api.todos.list(userId);
+    return todoList;
+  });
 
-const userCases = (builder) => {
+const resetTodoList = ({ api }) =>
+  createAsyncThunk("resetTodoList", async (userId) => {
+    const todoList = await api.todos.resetList(userId);
+    return todoList;
+  });
+
+const filterByCompletion = ({ api }) =>
+  createAsyncThunk("filterByCompletion", async ({ userId, completed }) => {
+    const filteredList = await api.todos.filterByCompletion({userId, completed});
+    return filteredList;
+  });
+
+const userCases = (actions) => (builder) => {
   builder
-    .addCase(fetchTodoList.fulfilled, (state, action) => {
+    .addCase(actions.setUser.fulfilled, (state, action) => {
+      return { ...state, userId: action.payload, status: "fulfilled" };
+    })
+    .addCase(actions.getTodosForUser.fulfilled, (state, action) => {
       return { ...state, todoList: action.payload };
     })
-    .addCase(resetTodoList.fulfilled, (state, action) => {
+    .addCase(actions.resetTodoList.fulfilled, (state, action) => {
       return { ...state, todoList: [] };
     })
-    .addCase(filterByCompletion.fulfilled, (state, action) => {
+    .addCase(actions.filterByCompletion.fulfilled, (state, action) => {
       return { ...state, todoList: action.payload };
     })
     .addDefaultCase((state, action) => state);
 };
 
-export const fetchTodoList = createAsyncThunk(
-  "fetchTodoList",
-  async (userId) => {
-    const response = await fetch(`/todo/${userId}`);
-    const todoList = await response.json();
-    return todoList;
-  }
-);
+export default ({ storage, api }) => {
+  const actions = {};
 
-export const resetTodoList = createAsyncThunk(
-  "resetTodoList",
-  async (userId) => {
-    const request = new Request(`/todo/${userId}/reset`, { method: "DELETE" });
-    const response = await fetch(request);
-    const result = await response.json();
-    return result;
-  }
-);
+  actions.setUser = setUser({ storage, api });
+  actions.getTodosForUser = getTodosForUser({ api });
+  actions.resetTodoList = resetTodoList({ api });
+  actions.filterByCompletion = filterByCompletion({ api });
 
-export const filterByCompletion = createAsyncThunk(
-  "filterByCompletion",
-  async ({ userId, completed }) => {
-    const response = await fetch(`/todo/${userId}/${completed}`);
-    const filteredList = await response.json();
-    return filteredList;
-  }
-);
+  const builderCallback = userCases(actions);
+  const initialState = { userId: "", todoList: [], status: "idle" };
 
-const userReducer = async (cache) => {
-  const initialState = await fetchInitialState(cache);
-  const builderCallback = userCases;
-  return createReducer(initialState, builderCallback);
-};
+  const reducer = createReducer(initialState, builderCallback);
 
-const storeBuilder = () => {
-  const config = {
-    cache: localStorage,
-  };
-  const builder = {};
-  const store = async () => {
-    const reducer = await userReducer(config.cache);
-    return configureStore({
+  return {
+    actions,
+    store: configureStore({
       reducer,
-    });
+    }),
   };
-  const cache = (cache) => {
-    config.cache = cache;
-    return builder;
-  };
-  const build = async () => {
-    return await store();
-  };
-  builder.cache = cache;
-  builder.build = build;
-  return builder;
 };
-
-export default storeBuilder;

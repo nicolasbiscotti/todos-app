@@ -7,7 +7,7 @@ const aTodoRepository = (baseURL) => {
 
   const repository = { list };
 
-  return repository;
+  return { todos: list };
 };
 
 export default aTodoRepository;
