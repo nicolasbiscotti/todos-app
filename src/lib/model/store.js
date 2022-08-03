@@ -3,8 +3,9 @@ import {
   createAsyncThunk,
   createReducer,
 } from "@reduxjs/toolkit";
+import { userBuilder } from "./userBuilder";
 
-const user = { userId: "", todoList: [], status: "idle" };
+const emptyUser = userBuilder.build();
 
 const addTodo = createAsyncThunk("addTodo", async ({ title, message }) => {});
 
@@ -23,6 +24,7 @@ const setUser = ({ storage, api }) =>
       storage.setItem("userId", JSON.stringify(userId));
       return userId;
     }
+    // Promise.resolve(userId)
     return userId;
   });
 
@@ -40,25 +42,36 @@ const resetTodoList = ({ api }) =>
 
 const filterByCompletion = ({ api }) =>
   createAsyncThunk("filterByCompletion", async ({ userId, completed }) => {
-    const filteredList = await api.todos.filterByCompletion({userId, completed});
+    const filteredList = await api.todos.filterByCompletion({
+      userId,
+      completed,
+    });
     return filteredList;
   });
 
 const userCases = (actions) => (builder) => {
   builder
     .addCase(actions.setUser.fulfilled, (state, action) => {
-      return { ...state, userId: action.payload, status: "fulfilled" };
+      return { ...state, userId: action.payload, setUserLoading: "fulfilled" };
     })
     .addCase(actions.getTodosForUser.fulfilled, (state, action) => {
-      return { ...state, todoList: action.payload };
+      return {
+        ...state,
+        todoList: action.payload,
+        todoListLoading: "fulfilled",
+      };
     })
-    .addCase(actions.resetTodoList.fulfilled, (state, action) => {
-      return { ...state, todoList: [] };
+    .addCase(actions.resetTodoList.fulfilled, (state) => {
+      return { ...state, todoList: [], todoListLoading: "fulfilled" };
     })
     .addCase(actions.filterByCompletion.fulfilled, (state, action) => {
-      return { ...state, todoList: action.payload };
+      return {
+        ...state,
+        todoList: action.payload,
+        todoListLoading: "fulfilled",
+      };
     })
-    .addDefaultCase((state, action) => state);
+    .addDefaultCase((state) => state);
 };
 
 export default ({ storage, api }) => {
@@ -70,7 +83,7 @@ export default ({ storage, api }) => {
   actions.filterByCompletion = filterByCompletion({ api });
 
   const builderCallback = userCases(actions);
-  const initialState = { userId: "", todoList: [], status: "idle" };
+  const initialState = emptyUser;
 
   const reducer = createReducer(initialState, builderCallback);
 

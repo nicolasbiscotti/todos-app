@@ -5,11 +5,12 @@ import { fakeServer } from "../../test/fake/fakeServer/server";
 import { givenThatCache } from "../../test/givens/givenThatCache";
 import { givenThatDB } from "../../test/givens/givenThatDB";
 import verifyThatAction from "../../test/verifies/verifyThatAction";
-import aUserRepository from "../api/userRepository";
+import api from "../api";
 import store from "./store";
+import { userBuilder } from "./userBuilder";
 
 describe("Store service", () => {
-  const user = { userId: "456-hjkñ-7890fhjkl", todoList: [], status: "idle" };
+  const user = userBuilder.userId("456-hjkñ-7890fhjkl").build();
   const aTodoList = createDummyData();
   const db = fakeDb(); // an empty database
   const server = fakeServer(db);
@@ -25,7 +26,7 @@ describe("Store service", () => {
 
   afterAll(() => server.close());
 
-  it("should create a user and store it in the cache when starts with an empty cache", async () => {
+  it("should create a user and store it in the cache", async () => {
     givenThatDB(db).willCreateUser(user.userId);
 
     const {
@@ -33,7 +34,7 @@ describe("Store service", () => {
       actions: { setUser },
     } = store({
       storage: cache,
-      api: aUserRepository(""),
+      api: api("/"),
     });
 
     await theStore.dispatch(setUser());
@@ -41,13 +42,12 @@ describe("Store service", () => {
     const state = theStore.getState();
     const cachedUserId = JSON.parse(cache.getItem("userId"));
 
-    expect(state).toEqual({ ...user, status: "fulfilled" });
+    expect(state).toEqual({ ...user, setUserLoading: "fulfilled" });
     expect(cachedUserId).toEqual(user.userId);
   });
 
   it("should set the todoList of the user in cache", async () => {
     givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(aTodoList);
-
     givenThatCache(cache).alreadyHasItem("userId").withValue(user.userId);
 
     const {
@@ -55,10 +55,15 @@ describe("Store service", () => {
       actions: { setUser, getTodosForUser },
     } = store({
       storage: cache,
-      api: aUserRepository(""),
+      api: api("/"),
     });
 
-    const expectedState = { ...user, todoList: aTodoList, status: "fulfilled" };
+    const expectedState = {
+      ...user,
+      setUserLoading: "fulfilled",
+      todoList: aTodoList,
+      todoListLoading: "fulfilled",
+    };
 
     await theStore.dispatch(setUser());
     await theStore.dispatch(getTodosForUser(theStore.getState().userId));
@@ -70,21 +75,20 @@ describe("Store service", () => {
 
   it("should reset the todoList of the user", async () => {
     givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(aTodoList);
-
     givenThatCache(cache).alreadyHasItem("userId").withValue(user.userId);
 
     const { store: theStore, actions } = store({
       storage: cache,
-      api: aUserRepository(""),
+      api: api("/"),
     });
     await theStore.dispatch(actions.setUser());
     const userId = theStore.getState().userId;
 
-    const expectedState = {
-      ...user,
-      todoList: [],
-      status: "fulfilled",
-    };
+    const expectedState = userBuilder
+      .of(user)
+      .setUserLoading("fulfilled")
+      .todoListLoading("fulfilled")
+      .build();
 
     await verifyThatAction(actions.resetTodoList)
       .withArgument(userId)
@@ -94,7 +98,6 @@ describe("Store service", () => {
 
   it("should filter the todoList of the user", async () => {
     givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(aTodoList);
-
     givenThatCache(cache).alreadyHasItem("userId").withValue(user.userId);
 
     const {
@@ -102,7 +105,7 @@ describe("Store service", () => {
       actions: { setUser, getTodosForUser, filterByCompletion },
     } = store({
       storage: cache,
-      api: aUserRepository(""),
+      api: api("/"),
     });
     await theStore.dispatch(setUser());
     const userId = theStore.getState().userId;
@@ -110,20 +113,23 @@ describe("Store service", () => {
     const stateWithCompletedTodos = {
       ...user,
       todoList: aTodoList.filter((todo) => todo.completed),
-      status: "fulfilled",
+      setUserLoading: "fulfilled",
+      todoListLoading: "fulfilled",
     };
 
     const stateWithUncompletedTodos = {
       ...user,
       todoList: aTodoList.filter((todo) => !todo.completed),
-      status: "fulfilled",
+      setUserLoading: "fulfilled",
+      todoListLoading: "fulfilled",
     };
 
-    const stateWithAllTodos = {
-      ...user,
-      todoList: aTodoList,
-      status: "fulfilled",
-    };
+    const stateWithAllTodos = userBuilder
+      .userId(user.userId)
+      .todoList(aTodoList)
+      .setUserLoading("fulfilled")
+      .todoListLoading("fulfilled")
+      .build();
 
     const completedTodosForUser = {
       userId,
