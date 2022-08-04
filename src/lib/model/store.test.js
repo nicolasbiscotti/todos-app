@@ -91,7 +91,7 @@ describe("Store service", () => {
       .build();
 
     await verifyThatAction(actions.resetTodoList)
-      .withArgument(userId)
+      .withPayload(userId)
       .dispatchedOn(theStore)
       .shouldChangeTheStateTo(expectedState);
   });
@@ -141,18 +141,52 @@ describe("Store service", () => {
     };
 
     await verifyThatAction(filterByCompletion)
-      .withArgument(completedTodosForUser)
+      .withPayload(completedTodosForUser)
       .dispatchedOn(theStore)
       .shouldChangeTheStateTo(stateWithCompletedTodos);
 
     await verifyThatAction(filterByCompletion)
-      .withArgument(uncompletedTodosForUser)
+      .withPayload(uncompletedTodosForUser)
       .dispatchedOn(theStore)
       .shouldChangeTheStateTo(stateWithUncompletedTodos);
 
     await verifyThatAction(getTodosForUser)
-      .withArgument(userId)
+      .withPayload(userId)
       .dispatchedOn(theStore)
       .shouldChangeTheStateTo(stateWithAllTodos);
+  });
+
+  it("should add a todo with a valid title", async () => {
+    givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(aTodoList);
+    givenThatDB(db).willCreateTodo("2");
+    givenThatCache(cache).alreadyHasItem("userId").withValue(user.userId);
+
+    const storeAndActions = store({ storage: cache, api: api("/") });
+    const {
+      store: appStore,
+      actions: { setUser, getTodosForUser, addTodoForUser },
+    } = storeAndActions;
+    await appStore.dispatch(setUser());
+    const userId = appStore.getState().userId;
+    await appStore.dispatch(getTodosForUser(userId));
+
+    const expectedState = userBuilder
+      .userId(user.userId)
+      .todoList([
+        ...aTodoList,
+        { id: "2", title: "this is the..", message: "hy", completed: false },
+      ])
+      .setUserLoading("fulfilled")
+      .todoListLoading("fulfilled")
+      .build();
+
+    await verifyThatAction(addTodoForUser)
+      .withPayload({
+        userId,
+        title: "this is the..",
+        message: "hy",
+      })
+      .dispatchedOn(appStore)
+      .shouldChangeTheStateTo(expectedState);
   });
 });

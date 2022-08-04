@@ -5,6 +5,10 @@ export const givenThatDB = (db) => {
     db.willCreateUser(userId);
   };
 
+  const willCreateTodo = (todoId) => {
+    db.willCreateTodo(todoId);
+  };
+
   const withTodoList = (todoList) => {
     db.willCreateUser(config.userId);
     db.createUser();
@@ -16,7 +20,7 @@ export const givenThatDB = (db) => {
     return { withTodoList };
   };
 
-  const given = { alreadyHasUserId, willCreateUser };
+  const given = { alreadyHasUserId, willCreateUser, willCreateTodo };
 
   return given;
 };

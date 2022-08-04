@@ -7,7 +7,11 @@ import { userBuilder } from "./userBuilder";
 
 const emptyUser = userBuilder.build();
 
-const addTodo = createAsyncThunk("addTodo", async ({ title, message }) => {});
+const addTodoForUser = ({ api }) =>
+  createAsyncThunk("addTodoForUser", async ({ userId, title, message }) => {
+    const newTodo = await api.todos.addItem({ userId, title, message });
+    return newTodo;
+  });
 
 const deleteTodo = createAsyncThunk("deleteTodo", async (todoId) => {});
 
@@ -71,6 +75,15 @@ const userCases = (actions) => (builder) => {
         todoListLoading: "fulfilled",
       };
     })
+    .addCase(actions.addTodoForUser.fulfilled, (state, action) => ({
+      ...state,
+      todoListLoading: "fulfilled",
+      todoList: [...state.todoList, action.payload],
+    }))
+    .addCase(actions.addTodoForUser.rejected, (state, action) => ({
+      ...state,
+      todoListLoading: "rejected",
+    }))
     .addDefaultCase((state) => state);
 };
 
@@ -81,6 +94,7 @@ export default ({ storage, api }) => {
   actions.getTodosForUser = getTodosForUser({ api });
   actions.resetTodoList = resetTodoList({ api });
   actions.filterByCompletion = filterByCompletion({ api });
+  actions.addTodoForUser = addTodoForUser({ api });
 
   const builderCallback = userCases(actions);
   const initialState = emptyUser;

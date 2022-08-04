@@ -25,6 +25,13 @@ export const handlers = (db) => {
       const todoList = db.getTodosForUser(userId);
       return res(ctx.status(200), ctx.json(todoList));
     }),
+    // Handles a POST /todo/:userId
+    rest.post("/todo/:userId", async (req, res, ctx) => {
+      const { userId } = req.params;
+      const { title, message } = await req.json();
+      const todo = db.addTodoForUser({ userId, title, message });
+      return res(ctx.status(200), ctx.json(todo));
+    }),
   ];
 
   return handlers;

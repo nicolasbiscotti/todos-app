@@ -1,8 +1,8 @@
 const verifyThatAction = (thunk) => {
   const config = {};
   const shouldChangeTheStateTo = async (expectedState) => {
-    const { store, arg } = config;
-    await store.dispatch(thunk(arg));
+    const { store, payload } = config;
+    await store.dispatch(thunk(payload));
     const state = store.getState();
     expect(state).toEqual(expectedState);
   };
@@ -11,12 +11,12 @@ const verifyThatAction = (thunk) => {
     config.store = store;
     return { shouldChangeTheStateTo };
   };
-  const withArgument = (arg) => {
-    config.arg = arg;
+  const withPayload = (payload) => {
+    config.payload = payload;
     return { dispatchedOn };
   };
 
-  return { withArgument };
+  return { withPayload };
 };
 
 export default verifyThatAction;
