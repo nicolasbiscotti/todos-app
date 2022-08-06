@@ -1,110 +1,19 @@
-import {
-  configureStore,
-  createAsyncThunk,
-  createReducer,
-} from "@reduxjs/toolkit";
-import { userBuilder } from "./userBuilder";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import middleware from "./middleware";
+import todos from "./reducers/todos";
+import ui from "./reducers/ui";
+import user from "./reducers/user";
 
-const emptyUser = userBuilder.build();
+const rootReducer = combineReducers({
+  user: user,
+  todos: todos,
+  ui: ui,
+});
 
-const addTodoForUser = ({ api }) =>
-  createAsyncThunk("addTodoForUser", async ({ userId, title, message }) => {
-    const newTodo = await api.todos.addItem({ userId, title, message });
-    return newTodo;
+export function setupStore(preloadedState, { api, storage }) {
+  return configureStore({
+    preloadedState,
+    reducer: rootReducer,
+    middleware: [...middleware].map((fn) => fn({ api, storage })),
   });
-
-const deleteTodo = createAsyncThunk("deleteTodo", async (todoId) => {});
-
-const setCompletion = createAsyncThunk(
-  "setCompletion",
-  async ({ completion, todoId }) => {}
-);
-
-const setUser = ({ storage, api }) =>
-  createAsyncThunk("setUser", async () => {
-    const userId = JSON.parse(storage.getItem("userId"));
-    if (!userId) {
-      const userId = await api.user.createUser();
-      storage.setItem("userId", JSON.stringify(userId));
-      return userId;
-    }
-    // Promise.resolve(userId)
-    return userId;
-  });
-
-const getTodosForUser = ({ api }) =>
-  createAsyncThunk("getTodosForUser", async (userId) => {
-    const todoList = await api.todos.list(userId);
-    return todoList;
-  });
-
-const resetTodoList = ({ api }) =>
-  createAsyncThunk("resetTodoList", async (userId) => {
-    const todoList = await api.todos.resetList(userId);
-    return todoList;
-  });
-
-const filterByCompletion = ({ api }) =>
-  createAsyncThunk("filterByCompletion", async ({ userId, completed }) => {
-    const filteredList = await api.todos.filterByCompletion({
-      userId,
-      completed,
-    });
-    return filteredList;
-  });
-
-const userCases = (actions) => (builder) => {
-  builder
-    .addCase(actions.setUser.fulfilled, (state, action) => {
-      return { ...state, userId: action.payload, setUserLoading: "fulfilled" };
-    })
-    .addCase(actions.getTodosForUser.fulfilled, (state, action) => {
-      return {
-        ...state,
-        todoList: action.payload,
-        todoListLoading: "fulfilled",
-      };
-    })
-    .addCase(actions.resetTodoList.fulfilled, (state) => {
-      return { ...state, todoList: [], todoListLoading: "fulfilled" };
-    })
-    .addCase(actions.filterByCompletion.fulfilled, (state, action) => {
-      return {
-        ...state,
-        todoList: action.payload,
-        todoListLoading: "fulfilled",
-      };
-    })
-    .addCase(actions.addTodoForUser.fulfilled, (state, action) => ({
-      ...state,
-      todoListLoading: "fulfilled",
-      todoList: [...state.todoList, action.payload],
-    }))
-    .addCase(actions.addTodoForUser.rejected, (state, action) => ({
-      ...state,
-      todoListLoading: "rejected",
-    }))
-    .addDefaultCase((state) => state);
-};
-
-export default ({ storage, api }) => {
-  const actions = {};
-
-  actions.setUser = setUser({ storage, api });
-  actions.getTodosForUser = getTodosForUser({ api });
-  actions.resetTodoList = resetTodoList({ api });
-  actions.filterByCompletion = filterByCompletion({ api });
-  actions.addTodoForUser = addTodoForUser({ api });
-
-  const builderCallback = userCases(actions);
-  const initialState = emptyUser;
-
-  const reducer = createReducer(initialState, builderCallback);
-
-  return {
-    actions,
-    store: configureStore({
-      reducer,
-    }),
-  };
-};
+}

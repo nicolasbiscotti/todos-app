@@ -1,10 +1,19 @@
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../lib/model/hooks";
+import { selectTodoList } from "../../lib/model/reducers/todos";
+import { selectLoadingTodoList } from "../../lib/model/reducers/ui";
+import { getUser, selectUserId } from "../../lib/model/reducers/user";
 
 const TodoManagerForm = ({ children }) => {
-  const userId = useSelector((state) => state.userId);
-  const todoList = useSelector((state) => state.todoList);
-  const todoListStatus = useSelector((state) => state.status);
+  const dispatch = useAppDispatch();
+  const userId = useAppSelector(selectUserId);
+  const todoList = useAppSelector(selectTodoList);
+  const loadingTodoList = useAppSelector(selectLoadingTodoList);
 
-  return children({ userId, todoList, todoListStatus });
+  useEffect(() => {
+    dispatch(getUser());
+  }, []);
+
+  return children({ userId, todoList, loadingTodoList });
 };
 export default TodoManagerForm;
