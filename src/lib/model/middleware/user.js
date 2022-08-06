@@ -1,4 +1,4 @@
-import { loadingTodoList } from "../reducers/ui";
+import { loadingTodoList, todoListLoaded } from "../reducers/ui";
 import { fetchUser, getUser, searchUserInCache, setUser, storeUserInCache } from "../reducers/user";
 
 export const getUserFlow = () => ({ dispatch }) => next => async action => {
@@ -16,6 +16,7 @@ export const processfetchUser = ({api}) => ({ dispatch }) => next => async actio
   if(action.type === fetchUser.type) {
     const userId = await api.user.createUser();
     dispatch(setUser(userId));
+    dispatch(todoListLoaded());
     dispatch(storeUserInCache(userId));
   }
 

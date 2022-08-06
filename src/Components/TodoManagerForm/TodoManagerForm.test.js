@@ -42,7 +42,7 @@ describe("TodoManagerForm Component", () => {
           return (
             <FunForm>
               {() => {
-                if (loadingTodoList === "pending") {
+                if (loadingTodoList) {
                   return <div>Loading</div>;
                 }
                 return (
