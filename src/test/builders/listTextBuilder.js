@@ -1,4 +1,4 @@
-export default function listAccessibleName() {
+export default function listTextBuilder() {
   const config = {};
   const builder = {};
 

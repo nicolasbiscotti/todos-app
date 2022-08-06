@@ -1,5 +1,4 @@
-import { render, waitFor } from "@testing-library/react";
-import listAccessibleName from "../../test/builders/listAccessibleName";
+import { waitFor } from "@testing-library/react";
 import cacheBuilder from "../../test/fake/cacheBuilder";
 import { fakeDb } from "../../test/fake/fakeServer/db";
 import { fakeServer } from "../../test/fake/fakeServer/server";
@@ -10,8 +9,9 @@ import TodoManagerForm from "./TodoManagerForm";
 import FunForm from "../FunForm/FunForm";
 import TodoList from "../ItemList/TodoList";
 import ItemList from "../ItemList/ItemList";
-import storeBuilder from "../../lib/model/store";
-import { Provider } from "react-redux";
+import api from "../../lib/api";
+import { renderWithProvider } from "../../test/utils/renderWithProvider";
+import listTextBuilder from "../../test/builders/listTextBuilder";
 
 describe("TodoManagerForm Component", () => {
   const user = {
@@ -21,6 +21,7 @@ describe("TodoManagerForm Component", () => {
   const db = fakeDb(); // an empty database
   const server = fakeServer(db);
   const cache = cacheBuilder().build(); // an empty cache
+  const appAPI = api("/");
 
   beforeAll(() => server.listen());
 
@@ -32,52 +33,16 @@ describe("TodoManagerForm Component", () => {
 
   afterAll(() => server.close());
 
-  xit("should display the list of an existing cached user", async () => {
-    givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(user.todoList);
-    givenThatCache(cache).alreadyHasItem("userId").withValue(user.userId);
-
-    const store = await storeBuilder().cache(cache).build();
-
-    const expectedAccessibleName = listAccessibleName()
-      .title("")
-      .items(user.todoList)
-      .build();
-
-    const { getByRole } = render(
-      <Provider store={store}>
-        <TodoManagerForm>
-          {({ todoList, todoListStatus }) => (
-            <FunForm>
-              {() => {
-                if (todoListStatus === "pending") {
-                  return <div>Loading</div>;
-                }
-                return <TodoList initialList={todoList} />;
-              }}
-            </FunForm>
-          )}
-        </TodoManagerForm>
-      </Provider>
-    );
-
-    const list = await waitFor(() => getByRole("list"));
-
-    expect(list).toHaveTextContent(expectedAccessibleName);
-  });
-
-  xit("should fetch a new userId and cache it", async () => {
+  it("should create a new user and cache it", async () => {
     givenThatDB(db).willCreateUser(user.userId);
 
-    const store = await storeBuilder().cache(cache).build();
-
-    const { getByRole } = render(
-      <Provider store={store}>
-        {" "}
-        <TodoManagerForm>
-          {({ userId, todoList, todoListStatus }) => (
+    const { getByRole } = renderWithProvider(
+      <TodoManagerForm>
+        {({ userId, todoList, loadingTodoList }) => {
+          return (
             <FunForm>
               {() => {
-                if (todoListStatus === "pending") {
+                if (loadingTodoList) {
                   return <div>Loading</div>;
                 }
                 return (
@@ -93,9 +58,10 @@ describe("TodoManagerForm Component", () => {
                 );
               }}
             </FunForm>
-          )}
-        </TodoManagerForm>
-      </Provider>
+          );
+        }}
+      </TodoManagerForm>,
+      { services: { api: appAPI, storage: cache } }
     );
 
     const list = await waitFor(() =>
@@ -104,5 +70,35 @@ describe("TodoManagerForm Component", () => {
 
     expect(list).not.toHaveTextContent();
     expect(JSON.parse(cache.getItem("userId"))).toEqual(user.userId);
+  });
+
+  it("should display the list of an existing cached user", async () => {
+    givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(user.todoList);
+    givenThatCache(cache).alreadyHasItem("userId").withValue(user.userId);
+
+    const expectedListText = listTextBuilder()
+      .title("")
+      .items(user.todoList)
+      .build();
+
+    const { getByRole } = renderWithProvider(
+      <TodoManagerForm>
+        {({ todoList, loadingTodoList }) => (
+          <FunForm>
+            {() => {
+              if (loadingTodoList) {
+                return <div>Loading</div>;
+              }
+              return <TodoList initialList={todoList} />;
+            }}
+          </FunForm>
+        )}
+      </TodoManagerForm>,
+      { services: { api: appAPI, storage: cache } }
+    );
+
+    const list = await waitFor(() => getByRole("list"));
+
+    expect(list).toHaveTextContent(expectedListText);
   });
 });
