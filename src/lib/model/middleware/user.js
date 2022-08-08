@@ -1,7 +1,7 @@
 import { loadingTodoList, todoListLoaded } from "../reducers/ui";
 import { fetchUser, getUser, searchUserInCache, setUser, storeUserInCache } from "../reducers/user";
 
-export const getUserFlow = () => ({ dispatch }) => next => async action => {
+export const getUserFlow = () => ({ dispatch }) => next => action => {
     next(action);
 
     if(action.type === getUser.type) {

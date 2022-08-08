@@ -1,4 +1,4 @@
-import { fetchTodoListForUser } from "../reducers/todos";
+import { fetchTodosForUser } from "../reducers/todos";
 import { fetchUser, searchUserInCache, setUser, storeUserInCache } from "../reducers/user";
 
 export const processStoreUserInCache = ({storage}) => () => next => action => {
@@ -16,7 +16,7 @@ export const getUserInCache = ({storage}) => ({dispatch}) => next => action => {
     const userId = JSON.parse(storage.getItem("userId"));
     if (userId) {
       dispatch(setUser(userId));
-      dispatch(fetchTodoListForUser(userId));
+      dispatch(fetchTodosForUser(userId));
     } else {
       dispatch(fetchUser());
     }

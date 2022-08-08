@@ -5,11 +5,11 @@ const initialState = {
   status: "idle",
 };
 
-export const setUser = createAction("[user] set user");
 export const getUser = createAction("[user] get user");
 export const searchUserInCache = createAction("[user] search user in cache");
 export const fetchUser = createAction("[user] fetch user");
 export const storeUserInCache = createAction("[user] store user in the cache");
+export const setUser = createAction("[user] set user");
 
 const userSlice = createSlice({
   name: "user",
