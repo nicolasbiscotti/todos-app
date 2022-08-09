@@ -5,17 +5,20 @@ const initialState = {
   status: "idle",
 };
 
-export const setUser = createAction("[user] set user");
 export const getUser = createAction("[user] get user");
-export const searchUserInCache = createAction("[user] search user in cache");
+export const loadUserTodos = createAction("[user] load user's todos");
 export const fetchUser = createAction("[user] fetch user");
-export const storeUserInCache = createAction("[user] store user in the cache");
+export const fetchUserSuccess = createAction("[user] fetch user success");
+export const fetchUserError = createAction("[user] fetch user error");
+export const updateUserId = createAction("[user] update userId");
+
+export const setUserId = createAction("[user] set user");
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   extraReducers: (builder) => {
-    builder.addCase(setUser, (state, action) => ({
+    builder.addCase(setUserId, (state, action) => ({
       ...state,
       userId: action.payload,
     }));

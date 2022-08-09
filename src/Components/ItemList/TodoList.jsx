@@ -1,7 +1,7 @@
 import Button from "../Button/Button";
 import ItemList from "./ItemList";
 
-const TodoList = ({ initialList, onEditItem, onDeleteItem }) => (
+const TodoList = ({ userId, initialList, onEditItem, onDeleteItem }) => (
   <ItemList {...{ initialList, onEditItem, onDeleteItem }}>
     {({ items, mouseOverId }) => {
       const todoList = items.map((todo) => (
@@ -30,7 +30,11 @@ const TodoList = ({ initialList, onEditItem, onDeleteItem }) => (
         </li>
       ));
 
-      return <ul className="Item-list">{todoList}</ul>;
+      return (
+        <ul className="Item-list" aria-label={`Todo list of ${userId}`}>
+          {todoList}
+        </ul>
+      );
     }}
   </ItemList>
 );

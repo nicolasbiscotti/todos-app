@@ -6,17 +6,21 @@ import { givenThatCache } from "../../test/givens/givenThatCache";
 import { givenThatDB } from "../../test/givens/givenThatDB";
 import { createDummyData } from "../../test/fake/fakeList";
 import TodoManagerForm from "./TodoManagerForm";
-import FunForm from "../FunForm/FunForm";
-import TodoList from "../ItemList/TodoList";
-import ItemList from "../ItemList/ItemList";
 import api from "../../lib/api";
 import { renderWithProvider } from "../../test/utils/renderWithProvider";
 import listTextBuilder from "../../test/builders/listTextBuilder";
+import userEvent from "@testing-library/user-event";
 
 describe("TodoManagerForm Component", () => {
   const user = {
-    userId: "234",
+    userId: "234-USER-007",
     todoList: createDummyData(),
+  };
+  const aTodo = {
+    id: "tyu5-lkjg09HDE-89rt",
+    title: "this is my title",
+    message: "default message",
+    completed: false,
   };
   const db = fakeDb(); // an empty database
   const server = fakeServer(db);
@@ -36,33 +40,9 @@ describe("TodoManagerForm Component", () => {
   it("should create a new user and cache it", async () => {
     givenThatDB(db).willCreateUser(user.userId);
 
-    const { getByRole } = renderWithProvider(
-      <TodoManagerForm>
-        {({ userId, todoList, loadingTodoList }) => {
-          return (
-            <FunForm>
-              {() => {
-                if (loadingTodoList) {
-                  return <div>Loading</div>;
-                }
-                return (
-                  <ItemList initialList={todoList}>
-                    {({ items }) => (
-                      <ul aria-label={`Todo list of ${userId}`}>
-                        {items.map((item) => (
-                          <li>{item.title}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </ItemList>
-                );
-              }}
-            </FunForm>
-          );
-        }}
-      </TodoManagerForm>,
-      { services: { api: appAPI, storage: cache } }
-    );
+    const { getByRole } = renderWithProvider(<TodoManagerForm />, {
+      services: { api: appAPI, storage: cache },
+    });
 
     const list = await waitFor(() =>
       getByRole("list", { name: `Todo list of ${user.userId}` })
@@ -81,24 +61,37 @@ describe("TodoManagerForm Component", () => {
       .items(user.todoList)
       .build();
 
-    const { getByRole } = renderWithProvider(
-      <TodoManagerForm>
-        {({ todoList, loadingTodoList }) => (
-          <FunForm>
-            {() => {
-              if (loadingTodoList) {
-                return <div>Loading</div>;
-              }
-              return <TodoList initialList={todoList} />;
-            }}
-          </FunForm>
-        )}
-      </TodoManagerForm>,
-      { services: { api: appAPI, storage: cache } }
-    );
+    const { getByRole } = renderWithProvider(<TodoManagerForm />, {
+      services: { api: appAPI, storage: cache },
+    });
 
     const list = await waitFor(() => getByRole("list"));
 
     expect(list).toHaveTextContent(expectedListText);
+  });
+
+  it("should display the new todo when the title is valid", async () => {
+    givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(user.todoList);
+    givenThatDB(db).willCreateTodo(aTodo.id);
+    givenThatCache(cache).alreadyHasItem("userId").withValue(user.userId);
+
+    const expectedListText = listTextBuilder()
+      .title("")
+      .items([...user.todoList, aTodo])
+      .build();
+
+    const { getByRole } = renderWithProvider(<TodoManagerForm />, {
+      services: { api: appAPI, storage: cache },
+    });
+
+    const UIUser = userEvent.setup();
+    await UIUser.click(getByRole("textbox", { name: "input todo" }));
+    await UIUser.keyboard(aTodo.title);
+    await UIUser.click(getByRole("button", { name: "Agregar" }));
+
+    const list = await waitFor(() => getByRole("list"));
+
+    expect(list).toHaveTextContent(expectedListText);
+    expect(db.getTodosForUser(user.userId)).toContainEqual(aTodo);
   });
 });

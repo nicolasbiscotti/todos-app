@@ -57,7 +57,7 @@ export const fakeDb = (
       completed: false,
     };
     storage[userId].push(todo);
-    return todo;
+    return { title, message, completed: false, todoId: todo.id };
   };
 
   const willCreateUser = (userId) => userIdGenerator.add(userId);
