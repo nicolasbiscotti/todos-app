@@ -1,4 +1,4 @@
-import { apiRequestCreateTodo } from "../actions/apiActions";
+import { apiRequest } from "../actions/apiActions";
 import {
   createTodoError,
   createTodoForUser,
@@ -6,26 +6,56 @@ import {
   setTodos,
   createTodoSuccess,
   updateTodos,
+  fetchTodosSuccess,
+  fetchTodosError,
 } from "../reducers/todos";
 import { loadingTodoList, todoListLoaded } from "../reducers/ui";
 import { selectUserId } from "../reducers/user";
 
-export const processFetchTodoForUser =
+export const fetchTodosFlow =
   ({ api }) =>
   ({ dispatch }) =>
   (next) =>
-  async (action) => {
+  (action) => {
     next(action);
 
     if (action.type === fetchTodosForUser.type) {
-      const todoList = await api.todos.list(action.payload);
-      dispatch(setTodos(todoList));
+      const data = {
+        payload: action.payload,
+        request: api.todos.list,
+        onSuccess: fetchTodosSuccess,
+        onError: fetchTodosError,
+      };
+      dispatch(apiRequest(data));
+      dispatch(loadingTodoList());
+    }
+  };
+
+export const processFetchTodoSuccess =
+  () =>
+  ({ dispatch }) =>
+  (next) =>
+  (action) => {
+    next(action);
+
+    if (action.type === fetchTodosSuccess.type) {
+      dispatch(setTodos(action.payload));
       dispatch(todoListLoaded());
+    }
+  };
+export const processFetchTodosError =
+  () =>
+  ({ dispatch }) =>
+  (next) =>
+  (action) => {
+    next(action);
+
+    if (action.type === fetchTodosError.type) {
     }
   };
 
 export const createTodoFlow =
-  () =>
+  ({ api }) =>
   ({ getState, dispatch }) =>
   (next) =>
   (action) => {
@@ -36,18 +66,18 @@ export const createTodoFlow =
       if (!action.payload.message) {
         payload.message = "default message";
       }
-      dispatch(
-        apiRequestCreateTodo({
-          payload,
-          onSuccess: createTodoSuccess,
-          onError: createTodoError,
-        })
-      );
+      const data = {
+        payload,
+        request: api.todos.addItem,
+        onSuccess: createTodoSuccess,
+        onError: createTodoError,
+      };
+      dispatch(apiRequest(data));
       dispatch(loadingTodoList());
     }
   };
 
-export const processCreateTodo =
+export const processCreateTodoSuccess =
   () =>
   ({ dispatch }) =>
   (next) =>
@@ -78,8 +108,10 @@ export const processCreateTodoError =
   };
 
 export const todosMiddleware = [
-  processFetchTodoForUser,
+  fetchTodosFlow,
+  processFetchTodoSuccess,
+  processFetchTodosError,
   createTodoFlow,
-  processCreateTodo,
+  processCreateTodoSuccess,
   processCreateTodoError,
 ];

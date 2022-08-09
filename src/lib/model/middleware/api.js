@@ -1,18 +1,17 @@
-import { apiRequestCreateTodo } from "../actions/apiActions";
+import { apiRequest } from "../actions/apiActions";
 
-export const apiCreateTodoForUser =
-  ({ api }) =>
+export const api =
+  () =>
   ({ dispatch }) =>
   (next) =>
   (action) => {
-    if (action.type === apiRequestCreateTodo.type) {
-      const { onSuccess, onError } = action.meta;
-      api.todos
-        .addItem(action.payload)
-        .then((todo) => dispatch(onSuccess(todo)))
+    if (action.type === apiRequest.type) {
+      const { onSuccess, onError, request } = action.meta;
+      request(action.payload)
+        .then((data) => dispatch(onSuccess(data)))
         .catch((error) => dispatch(onError(error)));
     }
     return next(action);
   };
 
-export const apiMiddleware = [apiCreateTodoForUser];
+export const apiMiddleware = [api];

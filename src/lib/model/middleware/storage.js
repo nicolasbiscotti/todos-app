@@ -1,26 +1,26 @@
-import { fetchTodosForUser } from "../reducers/todos";
-import { fetchUser, searchUserInCache, setUser, storeUserInCache } from "../reducers/user";
+import { getItem, storeItem } from "../actions/storageAction";
 
-export const processStoreUserInCache = ({storage}) => () => next => action => {
+export const processGetItem = ({storage}) => ({dispatch}) => next => action => {
+  next(action);
+
+  if (action.type === getItem.type) {
+    const { key, onItemExists, onNonItem } = action.meta;
+    const value = JSON.parse(storage.getItem(key));
+    if (value) {
+      dispatch(onItemExists(value));
+    } else {
+      dispatch(onNonItem());
+    }
+  }
+};
+
+export const processStoreItem = ({storage}) => () => next => action => {
     next(action);
 
-    if(action.type === storeUserInCache.type) {
-      storage.setItem("userId", JSON.stringify(action.payload));
+    if(action.type === storeItem.type) {
+      const { key, value } = action.payload;
+      storage.setItem(key, JSON.stringify(value));
     }
 };
 
-export const getUserInCache = ({storage}) => ({dispatch}) => next => action => {
-  next(action);
-
-  if(action.type === searchUserInCache.type) {
-    const userId = JSON.parse(storage.getItem("userId"));
-    if (userId) {
-      dispatch(setUser(userId));
-      dispatch(fetchTodosForUser(userId));
-    } else {
-      dispatch(fetchUser());
-    }
-  }
-}
-
-export const storageMiddleware = [processStoreUserInCache, getUserInCache];
+export const storageMiddleware = [processGetItem, processStoreItem];

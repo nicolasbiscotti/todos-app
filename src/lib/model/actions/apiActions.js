@@ -1,9 +1,9 @@
 import { createAction } from "@reduxjs/toolkit";
 
-export const apiRequestCreateTodo = createAction(
-  "[app] create todo request",
-  ({ payload, onSuccess, onError }) => ({
+export const apiRequest = createAction(
+  "[app] API Request",
+  ({ payload, onSuccess, onError, request }) => ({
     payload,
-    meta: { onSuccess, onError },
+    meta: { onSuccess, onError, request },
   })
 );
