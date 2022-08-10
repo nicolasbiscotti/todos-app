@@ -32,6 +32,17 @@ export const handlers = (db) => {
       const todo = db.addTodoForUser({ userId, title, message });
       return res(ctx.status(200), ctx.json(todo));
     }),
+    // Handles a PUT /todo/:userId
+    rest.put("/todo/:userId", async (req, res, ctx) => {
+      const { userId } = req.params;
+      const { completed, todoId } = await req.json();
+      const editedTodo = db.editTodoCompletionForUser({
+        userId,
+        completed,
+        todoId,
+      });
+      return res(ctx.status(200), ctx.json(editedTodo));
+    }),
   ];
 
   return handlers;

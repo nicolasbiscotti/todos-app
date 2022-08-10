@@ -31,7 +31,22 @@ const todoRepository = (baseURL) => {
     return todo;
   };
 
-  const todos = { list, resetList, filterByCompletion, addItem };
+  const editItem = async ({ userId, todoId, completed }) => {
+    const request = new Request(`${baseURL}/todo/${userId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ completed, todoId }),
+    });
+    try {
+      const response = await fetch(request);
+      const editedTodo = await response.json();
+      return { todoId, completed: editedTodo.completed };
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const todos = { list, resetList, filterByCompletion, addItem, editItem };
 
   return todos;
 };

@@ -13,7 +13,12 @@ export const setTodos = createAction("[todos] set todos");
 export const createTodoForUser = createAction("[todos] create todo for user");
 export const createTodoSuccess = createAction("[todos] create todo success");
 export const createTodoError = createAction("[todos] create todo error");
-export const updateTodos = createAction("[todos] update todos");
+export const addTodo = createAction("[todos] update todos");
+
+export const editTodoForUser = createAction("[todos] edit todo for user");
+export const editTodoSuccess = createAction("[todos] edit todo success");
+export const editTodoError = createAction("[todos] edit todo error");
+export const editTodo = createAction("[todos] edit todo");
 
 const todoSlice = createSlice({
   name: "todos",
@@ -24,9 +29,18 @@ const todoSlice = createSlice({
         ...state,
         list: payload,
       }))
-      .addCase(updateTodos, (state, { payload }) => ({
+      .addCase(addTodo, (state, { payload }) => ({
         ...state,
         list: [...state.list, payload],
+      }))
+      .addCase(editTodo, (state, action) => ({
+        ...state,
+        list: state.list.map((todo) => {
+          if ((todo.id === action.payload.todoId)) {
+            return { ...todo, completed: action.payload.completed };
+          }
+          return { ...todo };
+        }),
       }))
       .addDefaultCase((state) => state);
   },

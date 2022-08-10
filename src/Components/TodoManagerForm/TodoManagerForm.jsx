@@ -2,6 +2,7 @@ import { useCallback, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../lib/model/hooks";
 import {
   createTodoForUser,
+  editTodoForUser,
   selectTodoList,
 } from "../../lib/model/reducers/todos";
 import { selectLoadingTodoList } from "../../lib/model/reducers/ui";
@@ -23,6 +24,8 @@ const TodoManagerForm = () => {
     dispatch(createTodoForUser(payload))
   );
 
+  const editTodo = useCallback((payload) => dispatch(editTodoForUser(payload)));
+
   return (
     <FunForm initialValues={{ title: "" }} onSubmit={createTodo}>
       {({ values, handleChange, handleSubmit }) => {
@@ -40,7 +43,11 @@ const TodoManagerForm = () => {
             {loadingTodoList ? (
               <div>loading</div>
             ) : (
-              <TodoList userId={userId} initialList={todoList} />
+              <TodoList
+                userId={userId}
+                initialList={todoList}
+                onEditItem={editTodo}
+              />
             )}
             <button onClick={handleSubmit}>Agregar</button>
           </form>

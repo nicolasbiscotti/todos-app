@@ -3,4 +3,5 @@ export const FakeMessages = {
   USER_ID_ALREADY_EXISTS:
     "database constraint violation: userId already exists",
   USER_ID_NOT_FOUND: "database constraint violation: userId not found",
+  TODO_ID_NOT_FOUND: "database constraint violation: todoId not found"
 };

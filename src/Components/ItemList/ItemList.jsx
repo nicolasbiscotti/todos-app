@@ -8,11 +8,15 @@ function ItemList({ initialList, onEditItem, onDeleteItem, children }) {
     setMouseOver: () => setMouseOverId(item.id),
     setMouseOut: () => setMouseOverId(false),
     editItem: (event) => {
-      const target = event.target;
-      const value = target.type === "checkbox" ? target.checked : target.value;
-      const name = target.name;
-      item[name] = value;
-      onEditItem(item);
+      if (typeof onEditItem === "function") {
+        onEditItem(item);
+      } else {
+        const target = event.target;
+        const value =
+          target.type === "checkbox" ? target.checked : target.value;
+        const name = target.name;
+        item[name] = value;
+      }
     },
     deleteItem: () => onDeleteItem(item),
   }));
