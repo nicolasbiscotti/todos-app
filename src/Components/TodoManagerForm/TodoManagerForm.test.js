@@ -84,14 +84,42 @@ describe("TodoManagerForm Component", () => {
       services: { api: appAPI, storage: cache },
     });
 
-    const UIUser = userEvent.setup();
-    await UIUser.click(getByRole("textbox", { name: "input todo" }));
-    await UIUser.keyboard(aTodo.title);
-    await UIUser.click(getByRole("button", { name: "Agregar" }));
+    const uiUser = userEvent.setup();
+    await uiUser.click(getByRole("textbox", { name: "input todo" }));
+    await uiUser.keyboard(aTodo.title);
+    await uiUser.click(getByRole("button", { name: "Agregar" }));
 
     const list = await waitFor(() => getByRole("list"));
 
     expect(list).toHaveTextContent(expectedListText);
     expect(db.getTodosForUser(user.userId)).toContainEqual(aTodo);
+  });
+
+  it("should change the todo completion status", async () => {
+    givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(user.todoList);
+    givenThatCache(cache).alreadyHasItem("userId").withValue(user.userId);
+
+    const { title, completed } = user.todoList[0];
+
+    const { getByRole } = renderWithProvider(<TodoManagerForm />, {
+      services: { api: appAPI, storage: cache },
+    });
+
+    const uiUser = userEvent.setup();
+    let checkbox = await waitFor(() => getByRole("checkbox", { name: title }));
+    // const checkbox = within(testTodo).getByRole("checkbox");
+    await uiUser.click(checkbox);
+
+    checkbox = await waitFor(() => getByRole("checkbox", { name: title }));
+
+    if (completed) {
+      expect(checkbox).not.toBeChecked();
+    } else {
+      expect(checkbox).toBeChecked();
+    }
+    expect(db.getTodosForUser(user.userId)).toContainEqual({
+      ...user.todoList[0],
+      completed: !completed,
+    });
   });
 });
