@@ -13,7 +13,7 @@ export const setTodos = createAction("[todos] set todos");
 export const createTodoForUser = createAction("[todos] create todo for user");
 export const createTodoSuccess = createAction("[todos] create todo success");
 export const createTodoError = createAction("[todos] create todo error");
-export const addTodo = createAction("[todos] update todos");
+export const addTodo = createAction("[todos] add todo");
 
 export const editTodoForUser = createAction("[todos] edit todo for user");
 export const editTodoSuccess = createAction("[todos] edit todo success");

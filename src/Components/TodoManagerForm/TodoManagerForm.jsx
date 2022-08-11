@@ -1,3 +1,4 @@
+import logo from "../../logo.svg";
 import { useCallback, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../lib/model/hooks";
 import {
@@ -30,26 +31,45 @@ const TodoManagerForm = () => {
     <FunForm initialValues={{ title: "" }} onSubmit={createTodo}>
       {({ values, handleChange, handleSubmit }) => {
         return (
-          <form>
-            <label>
-              {"input todo"}
-              <input
-                type="text"
-                name="title"
-                value={values.title}
-                onChange={handleChange}
-              ></input>
-            </label>
-            {loadingTodoList ? (
-              <div>loading</div>
-            ) : (
-              <TodoList
-                userId={userId}
-                initialList={todoList}
-                onEditItem={editTodo}
-              />
-            )}
-            <button onClick={handleSubmit}>Agregar</button>
+          <form className="App">
+            <div className="App-header">
+              <img src={logo} className="App-logo" alt="logo" />
+            </div>
+
+            <div className="App-intro">
+              <h2>Todo list</h2>
+              <h4>¿Qué cosa tenés que terminar hoy?</h4>
+            </div>
+
+            <div className="App-input-todo-title">
+              <label>
+                {"input todo"}
+                <input
+                  type="text"
+                  name="title"
+                  value={values.title}
+                  onChange={handleChange}
+                ></input>
+              </label>
+            </div>
+
+            <div className="App-todo-list">
+              {loadingTodoList ? (
+                <div>loading</div>
+              ) : (
+                <TodoList
+                  userId={userId}
+                  initialList={todoList}
+                  onEditItem={editTodo}
+                />
+              )}
+            </div>
+
+            <div className="App-add-button">
+              <button className="add-big" onClick={handleSubmit}>
+                Agregar
+              </button>
+            </div>
           </form>
         );
       }}

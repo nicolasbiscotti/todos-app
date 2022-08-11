@@ -2,7 +2,7 @@ const userRepository = (baseURL) => {
   const createUser = async () => {
     const request = new Request(`${baseURL}/userId`);
     const response = await fetch(request);
-    const userId = await response.json();
+    const userId = await response.text();
     return userId;
   };
 

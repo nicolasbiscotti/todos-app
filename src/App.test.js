@@ -1,11 +1,17 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import App from "./App";
+import api from "./lib/api";
+import cacheBuilder from "./test/fake/cacheBuilder";
+import { renderWithProvider } from "./test/utils/renderWithProvider";
 
 describe("App Component", () => {
   let titles = ["Todo", "¿Qué cosa tenés que terminar hoy?"];
 
+  const cache = cacheBuilder().build();
+  const appAPI = api("/");
+
   it("renders without crashing", async () => {
-    render(<App />);
+    renderWithProvider(<App />, { services: { api: appAPI, storage: cache } });
     let logo;
     let headings;
     await waitFor(() => {

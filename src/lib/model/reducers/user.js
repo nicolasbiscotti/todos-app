@@ -7,6 +7,7 @@ const initialState = {
 
 export const getUser = createAction("[user] get user");
 export const loadUserTodos = createAction("[user] load user's todos");
+
 export const fetchUser = createAction("[user] fetch user");
 export const fetchUserSuccess = createAction("[user] fetch user success");
 export const fetchUserError = createAction("[user] fetch user error");
