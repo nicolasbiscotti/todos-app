@@ -23,7 +23,7 @@ export const fetchTodosFlow =
   (action) => {
     next(action);
 
-    if (action.type === fetchTodosForUser.type) {
+    if (fetchTodosForUser.match(action)) {
       const data = {
         payload: action.payload,
         request: api.todos.list,
@@ -42,7 +42,7 @@ export const processFetchTodoSuccess =
   (action) => {
     next(action);
 
-    if (action.type === fetchTodosSuccess.type) {
+    if (fetchTodosSuccess.match(action)) {
       dispatch(setTodos(action.payload));
       dispatch(todoListLoaded());
     }
@@ -54,7 +54,7 @@ export const processFetchTodosError =
   (action) => {
     next(action);
 
-    if (action.type === fetchTodosError.type) {
+    if (fetchTodosError.match(action)) {
     }
   };
 
@@ -65,7 +65,7 @@ export const createTodoFlow =
   (action) => {
     next(action);
 
-    if (action.type === createTodoForUser.type) {
+    if (createTodoForUser.match(action)) {
       const payload = { ...action.payload, userId: selectUserId(getState()) };
       if (!action.payload.message) {
         payload.message = "default message";
@@ -88,7 +88,7 @@ export const processCreateTodoSuccess =
   (action) => {
     next(action);
 
-    if (action.type === createTodoSuccess.type) {
+    if (createTodoSuccess.match(action)) {
       const payload = {
         id: action.payload.todoId,
         title: action.payload.title,
@@ -107,7 +107,7 @@ export const processCreateTodoError =
   (action) => {
     next(action);
 
-    if (action.type === createTodoError.type) {
+    if (createTodoError.match(action)) {
     }
   };
 
@@ -118,7 +118,7 @@ export const editTodoFlow =
   (action) => {
     next(action);
 
-    if (action.type === editTodoForUser.type) {
+    if (editTodoForUser.match(action)) {
       const data = {
         payload: {
           userId: selectUserId(getState()),
@@ -141,7 +141,7 @@ export const processEditTodoSuccess =
   (action) => {
     next(action);
 
-    if (action.type === editTodoSuccess.type) {
+    if (editTodoSuccess.match(action)) {
       dispatch(editTodo(action.payload));
       dispatch(todoListLoaded());
     }
@@ -154,7 +154,7 @@ export const processEditTodoError =
   (action) => {
     next(action);
 
-    if (action.type === editTodoError.type) {
+    if (editTodoError.match(action)) {
     }
   };
 

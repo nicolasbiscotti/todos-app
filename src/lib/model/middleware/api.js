@@ -5,7 +5,7 @@ export const api =
   ({ dispatch }) =>
   (next) =>
   (action) => {
-    if (action.type === apiRequest.type) {
+    if (apiRequest.match(action)) {
       const { onSuccess, onError, request } = action.meta;
       request(action.payload)
         .then((data) => dispatch(onSuccess(data)))

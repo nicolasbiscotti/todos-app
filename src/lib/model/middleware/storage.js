@@ -3,7 +3,7 @@ import { getItem, storeItem } from "../actions/storageAction";
 export const processGetItem = ({storage}) => ({dispatch}) => next => action => {
   next(action);
 
-  if (action.type === getItem.type) {
+  if (getItem.match(action)) {
     const { key, onItemExists, onNonItem } = action.meta;
     const value = JSON.parse(storage.getItem(key));
     if (value) {
@@ -17,7 +17,7 @@ export const processGetItem = ({storage}) => ({dispatch}) => next => action => {
 export const processStoreItem = ({storage}) => () => next => action => {
     next(action);
 
-    if(action.type === storeItem.type) {
+    if(storeItem.match(action)) {
       const { key, value } = action.payload;
       storage.setItem(key, JSON.stringify(value));
     }
