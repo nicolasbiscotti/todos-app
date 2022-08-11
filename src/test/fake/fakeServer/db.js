@@ -83,6 +83,21 @@ export const fakeDb = (
     return { ...editedTodo };
   };
 
+  const deleteTodoForUser = ({ userId, todoId }) => {
+    if (!contains(userId)) {
+      throw new Error(FakeMessages.USER_ID_NOT_FOUND);
+    }
+
+    const newList = storage[userId].filter((todo) => todo.id !== todoId);
+    
+    if (newList.length + 1 === storage[userId].length) {
+      storage[userId] = newList;
+      return { ok: true };
+    }
+
+    return { ok: false };
+  };
+
   const willCreateUser = (userId) => userIdGenerator.add(userId);
 
   const willCreateTodo = (todoId) => todoIdGenerator.add(todoId);
@@ -98,6 +113,7 @@ export const fakeDb = (
     getTodosForUserWithCompletion,
     addTodoForUser,
     editTodoCompletionForUser,
+    deleteTodoForUser,
     willCreateUser,
     willCreateTodo,
     clear,

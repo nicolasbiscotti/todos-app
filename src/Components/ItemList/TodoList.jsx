@@ -7,7 +7,7 @@ const TodoList = ({ userId, initialList, onEditItem, onDeleteItem }) => (
       const todoList = items.map((todo) => (
         <li
           key={todo.id}
-          data-testid={mouseOverId === todo.id && "mouseover"}
+          data-testid={todo.id}
           className="Item"
           onMouseOver={todo.setMouseOver}
           onMouseOut={todo.setMouseOut}
@@ -23,7 +23,7 @@ const TodoList = ({ userId, initialList, onEditItem, onDeleteItem }) => (
           </label>
 
           {mouseOverId === todo.id && (
-            <Button attributes={{ onClick: todo.deleteItem }}>
+            <Button attributes={{ onClick: todo.deleteItem, type: "button" }}>
               {() => "delete"}
             </Button>
           )}

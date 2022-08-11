@@ -45,6 +45,13 @@ export const handlers = (db) => {
       });
       return res(ctx.status(200), ctx.json(editedTodo));
     }),
+    // Handles a DELETE /todo/:userId
+    rest.delete(`${baseUrl}/todo/:userId`, async (req, res, ctx) => {
+      const { userId } = req.params;
+      const { todoId } = await req.json();
+      const deleteStatus = db.deleteTodoForUser({ userId, todoId });
+      return res(ctx.status(200), ctx.json(deleteStatus));
+    }),
   ];
 
   return handlers;

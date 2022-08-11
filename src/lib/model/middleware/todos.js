@@ -12,6 +12,10 @@ import {
   editTodoSuccess,
   editTodoError,
   editTodo,
+  deleteTodoForUser,
+  deleteTodoSuccess,
+  deleteTodoError,
+  deleteTodo,
 } from "../reducers/todos";
 import { loadingTodoList, todoListLoaded } from "../reducers/ui";
 import { selectUserId } from "../reducers/user";
@@ -158,6 +162,52 @@ export const processEditTodoError =
     }
   };
 
+export const deleteTodoFlow =
+  ({ api }) =>
+  ({ dispatch, getState }) =>
+  (next) =>
+  (action) => {
+    next(action);
+
+    if (deleteTodoForUser.match(action)) {
+      const data = {
+        payload: {
+          userId: selectUserId(getState()),
+          todoId: action.payload.id,
+        },
+        request: api.todos.deleteItem,
+        onSuccess: deleteTodoSuccess,
+        onError: deleteTodoError,
+      };
+      dispatch(apiRequest(data));
+      dispatch(loadingTodoList());
+    }
+  };
+
+export const processDeleteTodoSuccess =
+  () =>
+  ({ dispatch }) =>
+  (next) =>
+  (action) => {
+    next(action);
+
+    if (deleteTodoSuccess.match(action)) {
+      dispatch(deleteTodo(action.payload));
+      dispatch(todoListLoaded());
+    }
+  };
+
+export const processDeleteTodoError =
+  () =>
+  ({ dispatch }) =>
+  (next) =>
+  (action) => {
+    next(action);
+
+    if (deleteTodoError.match(action)) {
+    }
+  };
+
 export const todosMiddleware = [
   fetchTodosFlow,
   processFetchTodoSuccess,
@@ -168,4 +218,7 @@ export const todosMiddleware = [
   editTodoFlow,
   processEditTodoSuccess,
   processEditTodoError,
+  deleteTodoFlow,
+  processDeleteTodoSuccess,
+  processDeleteTodoError,
 ];

@@ -46,7 +46,29 @@ const todoRepository = (baseURL) => {
     }
   };
 
-  const todos = { list, resetList, filterByCompletion, addItem, editItem };
+  const deleteItem = async ({ userId, todoId }) => {
+    const request = new Request(`${baseURL}/todo/${userId}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ todoId }),
+    });
+    try {
+      const response = await fetch(request);
+      const deleteStatus = await response.json();
+      return {...deleteStatus, todoId};
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const todos = {
+    list,
+    resetList,
+    filterByCompletion,
+    addItem,
+    editItem,
+    deleteItem,
+  };
 
   return todos;
 };

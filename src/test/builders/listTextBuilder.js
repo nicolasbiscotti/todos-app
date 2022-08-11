@@ -1,5 +1,7 @@
 export default function listTextBuilder() {
-  const config = {};
+  const config = {
+    title: "",
+  };
   const builder = {};
 
   const title = (title) => {

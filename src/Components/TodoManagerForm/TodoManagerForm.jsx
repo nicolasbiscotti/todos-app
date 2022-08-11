@@ -3,6 +3,7 @@ import { useCallback, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../lib/model/hooks";
 import {
   createTodoForUser,
+  deleteTodoForUser,
   editTodoForUser,
   selectTodoList,
 } from "../../lib/model/reducers/todos";
@@ -26,6 +27,10 @@ const TodoManagerForm = () => {
   );
 
   const editTodo = useCallback((payload) => dispatch(editTodoForUser(payload)));
+
+  const deleteTodo = useCallback((payload) =>
+    dispatch(deleteTodoForUser(payload))
+  );
 
   return (
     <FunForm initialValues={{ title: "" }} onSubmit={createTodo}>
@@ -61,6 +66,7 @@ const TodoManagerForm = () => {
                   userId={userId}
                   initialList={todoList}
                   onEditItem={editTodo}
+                  onDeleteItem={deleteTodo}
                 />
               )}
             </div>
