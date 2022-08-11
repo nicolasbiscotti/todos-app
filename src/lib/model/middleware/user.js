@@ -15,7 +15,7 @@ import {
 export const getUserFlow = () => ({ dispatch }) => next => action => {
     next(action);
 
-    if(action.type === getUser.type) {
+    if(getUser.match(action)) {
       const data = {
         key: "userId",
         onItemExists: loadUserTodos,
@@ -28,7 +28,7 @@ export const getUserFlow = () => ({ dispatch }) => next => action => {
 export const processLoadUserTodoList = () => ({ dispatch }) => next => action => {
   next(action);
 
-  if (action.type === loadUserTodos.type) {
+  if (loadUserTodos.match(action)) {
     dispatch(setUserId(action.payload));
     dispatch(fetchTodosForUser(action.payload));
   }
@@ -38,7 +38,7 @@ export const processLoadUserTodoList = () => ({ dispatch }) => next => action =>
 export const fetchUserFlow = ({api}) => ({ dispatch }) => next => action => {
   next(action);
 
-  if(action.type === fetchUser.type) {
+  if(fetchUser.match(action)) {
     const data = {
       request: api.user.createUser,
       onSuccess: fetchUserSuccess,
@@ -53,7 +53,7 @@ export const fetchUserFlow = ({api}) => ({ dispatch }) => next => action => {
 export const processFetchUserSuccess = () => ({dispatch}) => next => action => {
   next(action);
   
-  if(action.type === fetchUserSuccess.type) {
+  if(fetchUserSuccess.match(action)) {
     dispatch(storeItem({key: "userId", value: action.payload}));
     dispatch(updateUserId(action.payload));
   }
@@ -63,7 +63,7 @@ export const processFetchUserSuccess = () => ({dispatch}) => next => action => {
 export const processUpdateUserId = () => ({dispatch}) => next => action => {
   next(action);
   
-  if (action.type === updateUserId.type) {
+  if (updateUserId.match(action)) {
     dispatch(setUserId(action.payload));
     dispatch(userLoaded());
   }

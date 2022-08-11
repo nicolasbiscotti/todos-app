@@ -13,12 +13,17 @@ export const setTodos = createAction("[todos] set todos");
 export const createTodoForUser = createAction("[todos] create todo for user");
 export const createTodoSuccess = createAction("[todos] create todo success");
 export const createTodoError = createAction("[todos] create todo error");
-export const addTodo = createAction("[todos] update todos");
+export const addTodo = createAction("[todos] add todo");
 
 export const editTodoForUser = createAction("[todos] edit todo for user");
 export const editTodoSuccess = createAction("[todos] edit todo success");
 export const editTodoError = createAction("[todos] edit todo error");
 export const editTodo = createAction("[todos] edit todo");
+
+export const deleteTodoForUser = createAction("[todos] delete todo for user");
+export const deleteTodoSuccess = createAction("[todos] delete todo success");
+export const deleteTodoError = createAction("[todos] delete todo error");
+export const deleteTodo = createAction("[todos] delete todo");
 
 const todoSlice = createSlice({
   name: "todos",
@@ -33,14 +38,18 @@ const todoSlice = createSlice({
         ...state,
         list: [...state.list, payload],
       }))
-      .addCase(editTodo, (state, action) => ({
+      .addCase(editTodo, (state, { payload }) => ({
         ...state,
         list: state.list.map((todo) => {
-          if ((todo.id === action.payload.todoId)) {
-            return { ...todo, completed: action.payload.completed };
+          if (todo.id === payload.todoId) {
+            return { ...todo, completed: payload.completed };
           }
           return { ...todo };
         }),
+      }))
+      .addCase(deleteTodo, (state, { payload }) => ({
+        ...state,
+        list: state.list.filter((todo) => todo.id !== payload.todoId),
       }))
       .addDefaultCase((state) => state);
   },

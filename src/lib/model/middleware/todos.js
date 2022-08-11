@@ -12,6 +12,10 @@ import {
   editTodoSuccess,
   editTodoError,
   editTodo,
+  deleteTodoForUser,
+  deleteTodoSuccess,
+  deleteTodoError,
+  deleteTodo,
 } from "../reducers/todos";
 import { loadingTodoList, todoListLoaded } from "../reducers/ui";
 import { selectUserId } from "../reducers/user";
@@ -23,7 +27,7 @@ export const fetchTodosFlow =
   (action) => {
     next(action);
 
-    if (action.type === fetchTodosForUser.type) {
+    if (fetchTodosForUser.match(action)) {
       const data = {
         payload: action.payload,
         request: api.todos.list,
@@ -42,7 +46,7 @@ export const processFetchTodoSuccess =
   (action) => {
     next(action);
 
-    if (action.type === fetchTodosSuccess.type) {
+    if (fetchTodosSuccess.match(action)) {
       dispatch(setTodos(action.payload));
       dispatch(todoListLoaded());
     }
@@ -54,7 +58,7 @@ export const processFetchTodosError =
   (action) => {
     next(action);
 
-    if (action.type === fetchTodosError.type) {
+    if (fetchTodosError.match(action)) {
     }
   };
 
@@ -65,7 +69,7 @@ export const createTodoFlow =
   (action) => {
     next(action);
 
-    if (action.type === createTodoForUser.type) {
+    if (createTodoForUser.match(action)) {
       const payload = { ...action.payload, userId: selectUserId(getState()) };
       if (!action.payload.message) {
         payload.message = "default message";
@@ -88,7 +92,7 @@ export const processCreateTodoSuccess =
   (action) => {
     next(action);
 
-    if (action.type === createTodoSuccess.type) {
+    if (createTodoSuccess.match(action)) {
       const payload = {
         id: action.payload.todoId,
         title: action.payload.title,
@@ -107,7 +111,7 @@ export const processCreateTodoError =
   (action) => {
     next(action);
 
-    if (action.type === createTodoError.type) {
+    if (createTodoError.match(action)) {
     }
   };
 
@@ -118,7 +122,7 @@ export const editTodoFlow =
   (action) => {
     next(action);
 
-    if (action.type === editTodoForUser.type) {
+    if (editTodoForUser.match(action)) {
       const data = {
         payload: {
           userId: selectUserId(getState()),
@@ -141,7 +145,7 @@ export const processEditTodoSuccess =
   (action) => {
     next(action);
 
-    if (action.type === editTodoSuccess.type) {
+    if (editTodoSuccess.match(action)) {
       dispatch(editTodo(action.payload));
       dispatch(todoListLoaded());
     }
@@ -154,7 +158,53 @@ export const processEditTodoError =
   (action) => {
     next(action);
 
-    if (action.type === editTodoError.type) {
+    if (editTodoError.match(action)) {
+    }
+  };
+
+export const deleteTodoFlow =
+  ({ api }) =>
+  ({ dispatch, getState }) =>
+  (next) =>
+  (action) => {
+    next(action);
+
+    if (deleteTodoForUser.match(action)) {
+      const data = {
+        payload: {
+          userId: selectUserId(getState()),
+          todoId: action.payload.id,
+        },
+        request: api.todos.deleteItem,
+        onSuccess: deleteTodoSuccess,
+        onError: deleteTodoError,
+      };
+      dispatch(apiRequest(data));
+      dispatch(loadingTodoList());
+    }
+  };
+
+export const processDeleteTodoSuccess =
+  () =>
+  ({ dispatch }) =>
+  (next) =>
+  (action) => {
+    next(action);
+
+    if (deleteTodoSuccess.match(action)) {
+      dispatch(deleteTodo(action.payload));
+      dispatch(todoListLoaded());
+    }
+  };
+
+export const processDeleteTodoError =
+  () =>
+  ({ dispatch }) =>
+  (next) =>
+  (action) => {
+    next(action);
+
+    if (deleteTodoError.match(action)) {
     }
   };
 
@@ -168,4 +218,7 @@ export const todosMiddleware = [
   editTodoFlow,
   processEditTodoSuccess,
   processEditTodoError,
+  deleteTodoFlow,
+  processDeleteTodoSuccess,
+  processDeleteTodoError,
 ];
