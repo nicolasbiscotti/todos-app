@@ -48,13 +48,13 @@ const TodoManagerForm = () => {
 
             <div className="App-input-todo-title">
               <label>
-                {"input todo"}
                 <input
                   type="text"
                   name="title"
                   value={values.title}
                   onChange={handleChange}
                 ></input>
+                <span>input todo</span>
               </label>
             </div>
 
