@@ -37,7 +37,7 @@ const TodoManagerForm = () => {
       {({ values, handleChange, handleSubmit }) => {
         return (
           <div className="flex flex-col justify-center min-h-screen sm:mx-auto sm:max-w-xl">
-            <form className="grow flex flex-col gap-3 justify-between items-stretch px-10 bg-slate-100">
+            <form className="grow flex flex-col gap-3 justify-between items-stretch px-2 sm:px-10 bg-slate-100">
               <img src={logo} className="self-start h-6 mt-8 mb-4" alt="logo" />
 
               <h1 className="text-2xl font-bold py-2 pl-3 border-l-8 border-amber-200">

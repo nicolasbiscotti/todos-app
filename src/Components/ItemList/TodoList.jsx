@@ -52,7 +52,7 @@ const TodoList = ({ userId, initialList, onEditItem, onDeleteItem }) => (
             <div className="flex gap-3">
               <h4>To-dos list</h4>
               <svg
-                className="h-6 w-6 flex-none fill-black stroke-white stroke-2"
+                className="h-6 w-6 flex-none fill-black stroke-white stroke-2 cursor-pointer"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
