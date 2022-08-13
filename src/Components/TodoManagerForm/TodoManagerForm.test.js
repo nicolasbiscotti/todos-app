@@ -85,7 +85,7 @@ describe("TodoManagerForm Component", () => {
     });
 
     const uiUser = userEvent.setup();
-    await uiUser.click(getByRole("textbox", { name: "input todo" }));
+    await uiUser.click(getByRole("textbox", { name: "Add a pending task..." }));
     await uiUser.keyboard(aTodo.title);
     await uiUser.click(getByRole("button", { name: "Agregar" }));
 

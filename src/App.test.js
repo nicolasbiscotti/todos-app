@@ -5,7 +5,7 @@ import cacheBuilder from "./test/fake/cacheBuilder";
 import { renderWithProvider } from "./test/utils/renderWithProvider";
 
 describe("App Component", () => {
-  let titles = ["Todo", "¿Qué cosa tenés que terminar hoy?"];
+  let titles = ["To-dos list", "There is still nothing to be done."];
 
   const cache = cacheBuilder().build();
   const appAPI = api("/");

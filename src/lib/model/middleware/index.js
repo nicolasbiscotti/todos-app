@@ -9,5 +9,5 @@ export default [
   ...todosMiddleware,
   ...storageMiddleware,
   ...apiMiddleware,
-  logger,
+  // logger,
 ];
