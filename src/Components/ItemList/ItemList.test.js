@@ -1,6 +1,5 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import ItemList from "./ItemList";
-import Button from "../Button/Button";
 import { createDummyData } from "../../test/fake/fakeList";
 import givenThatList from "../../test/givens/givenThatList";
 
@@ -12,12 +11,8 @@ describe("ItemList component", () => {
     completed: false,
   };
   let testList;
-  const addItem = () => {};
   const editItem = jest.fn();
   const deleteItem = jest.fn();
-  const listItems = () => {};
-  const resetList = () => {};
-  const filterItemsByCompleted = () => {};
 
   const renderList = (list) => {
     render(
@@ -46,9 +41,9 @@ describe("ItemList component", () => {
               </label>
 
               {mouseOverId === todo.id && (
-                <Button attributes={{ onClick: todo.deleteItem }}>
-                  {() => "delete"}
-                </Button>
+                <button type="button" onClick={todo.deleteItem}>
+                  delete
+                </button>
               )}
             </li>
           ));

@@ -128,7 +128,6 @@ describe("TodoManagerForm Component", () => {
     const { title, id } = user.todoList[0];
 
     const expectedTodoList = user.todoList.filter((todo) => todo.id !== id);
-    const expectedListText = listTextBuilder().items(expectedTodoList).build();
 
     const uiUser = userEvent.setup();
     const { getByRole, getByTestId } = renderWithProvider(<TodoManagerForm />, {

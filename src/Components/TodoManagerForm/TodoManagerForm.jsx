@@ -10,7 +10,7 @@ import {
 import { selectLoadingTodoList } from "../../lib/model/reducers/ui";
 import { getUser, selectUserId } from "../../lib/model/reducers/user";
 import FunForm from "../FunForm/FunForm";
-import TodoList from "../ItemList/TodoList";
+import ListContent from "./ListContent";
 
 const TodoManagerForm = () => {
   const dispatch = useAppDispatch();
@@ -55,23 +55,22 @@ const TodoManagerForm = () => {
                   onChange={handleChange}
                   className="absolute h-10 bg-slate-100"
                 />
-                <span className="absolute left-0 h-10 leading-10 text-gray-500">
+                <span
+                  className={` ${
+                    values.title === "" || "hidden"
+                  } absolute left-0 h-10 leading-10 text-gray-500`}
+                >
                   Add a pending task...
                 </span>
               </label>
 
-              <div className="grow">
-                {loadingTodoList ? (
-                  <div>loading</div>
-                ) : (
-                  <TodoList
-                    userId={userId}
-                    initialList={todoList}
-                    onEditItem={editTodo}
-                    onDeleteItem={deleteTodo}
-                  />
-                )}
-              </div>
+              <ListContent
+                loadingTodoList={loadingTodoList}
+                userId={userId}
+                initialList={todoList}
+                onEditItem={editTodo}
+                onDeleteItem={deleteTodo}
+              />
 
               <button
                 className="bg-white rounded-3xl my-5 py-2 shadow-md text-gray-500 hover:bg-black hover:text-white"
@@ -86,4 +85,5 @@ const TodoManagerForm = () => {
     </FunForm>
   );
 };
+
 export default TodoManagerForm;

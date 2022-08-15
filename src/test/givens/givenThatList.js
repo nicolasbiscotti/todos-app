@@ -1,5 +1,4 @@
 import { render } from "@testing-library/react";
-import Button from "../../Components/Button/Button";
 import ItemList from "../../Components/ItemList/ItemList";
 
 function givenThatList(itemList) {
@@ -31,7 +30,7 @@ function givenThatList(itemList) {
                 <span>{todo.title}</span>
               </label>
 
-              {mouseOverId === todo.id && <Button>{() => "delete"}</Button>}
+              {mouseOverId === todo.id && <button type="button">delete</button>}
             </li>
           ));
 
