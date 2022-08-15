@@ -1,4 +1,3 @@
-import Button from "../Button/Button";
 import ItemList from "./ItemList";
 
 const TodoList = ({ userId, initialList, onEditItem, onDeleteItem }) => (
