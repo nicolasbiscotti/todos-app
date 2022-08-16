@@ -25,6 +25,13 @@ export const deleteTodoSuccess = createAction("[todos] delete todo success");
 export const deleteTodoError = createAction("[todos] delete todo error");
 export const deleteTodo = createAction("[todos] delete todo");
 
+export const resetTodoListForUser = createAction(
+  "[todos] reset todo list for user"
+);
+export const resetTodosSuccess = createAction("[todos] reset todos success");
+export const resetTodosError = createAction("[todos] reset todos error");
+export const resetTodos = createAction("[todos] reset todos");
+
 const todoSlice = createSlice({
   name: "todos",
   initialState,
@@ -50,6 +57,10 @@ const todoSlice = createSlice({
       .addCase(deleteTodo, (state, { payload }) => ({
         ...state,
         list: state.list.filter((todo) => todo.id !== payload.todoId),
+      }))
+      .addCase(resetTodos, (state) => ({
+        ...state,
+        list: [],
       }))
       .addDefaultCase((state) => state);
   },

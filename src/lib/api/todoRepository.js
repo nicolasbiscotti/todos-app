@@ -5,13 +5,13 @@ const todoRepository = (baseURL) => {
     return await response.json();
   };
 
-  const resetList = async (userId) => {
+  const resetList = async ({userId}) => {
     const request = new Request(`${baseURL}/todo/${userId}/reset`, {
       method: "DELETE",
     });
     const response = await fetch(request);
-    const todoList = await response.json();
-    return todoList;
+    const result = await response.json();
+    return result;
   };
 
   const filterByCompletion = async ({ userId, completed }) => {

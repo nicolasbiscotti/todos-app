@@ -44,11 +44,11 @@ describe("TodoManagerForm Component", () => {
       services: { api: appAPI, storage: cache },
     });
 
-    const list = await waitFor(() =>
-      getByRole("list", { name: `Todo list of ${user.userId}` })
+    const heading = await waitFor(() =>
+      getByRole("heading", { name: `To-dos list` })
     );
 
-    expect(list).not.toHaveTextContent();
+    expect(heading).toBeInTheDocument();
     expect(JSON.parse(cache.getItem("userId"))).toEqual(user.userId);
   });
 
@@ -61,12 +61,16 @@ describe("TodoManagerForm Component", () => {
       .items(user.todoList)
       .build();
 
-    const { getByRole } = renderWithProvider(<TodoManagerForm />, {
+    const { getByRole, queryByRole } = renderWithProvider(<TodoManagerForm />, {
       services: { api: appAPI, storage: cache },
     });
 
     const list = await waitFor(() => getByRole("list"));
+    const heading = queryByRole("heading", {
+      name: `There is still nothing to be done.`,
+    });
 
+    expect(heading).not.toBeInTheDocument();
     expect(list).toHaveTextContent(expectedListText);
   });
 
@@ -141,5 +145,28 @@ describe("TodoManagerForm Component", () => {
 
     expect(list).not.toHaveTextContent(title);
     expect(db.getTodosForUser(user.userId)).toEqual(expectedTodoList);
+  });
+
+  it("should clear the todo list", async () => {
+    givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(user.todoList);
+    givenThatCache(cache).alreadyHasItem("userId").withValue(user.userId);
+
+    const uiUser = userEvent.setup();
+    const { getByRole } = renderWithProvider(<TodoManagerForm />, {
+      services: { api: appAPI, storage: cache },
+    });
+
+    const clearButton = await waitFor(() =>
+      getByRole("button", { name: "clear todo list" })
+    );
+    await uiUser.click(clearButton);
+
+    const heading = await waitFor(() =>
+      getByRole("heading", { name: `There is still nothing to be done.` })
+    );
+
+    expect(heading).toBeInTheDocument();
+    expect(getByRole("list")).not.toHaveTextContent();
+    expect(db.getTodosForUser(user.userId)).toHaveLength(0);
   });
 });

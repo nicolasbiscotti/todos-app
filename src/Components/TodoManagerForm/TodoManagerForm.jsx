@@ -5,18 +5,24 @@ import {
   createTodoForUser,
   deleteTodoForUser,
   editTodoForUser,
+  resetTodoListForUser,
   selectTodoList,
 } from "../../lib/model/reducers/todos";
-import { selectLoadingTodoList } from "../../lib/model/reducers/ui";
+import {
+  selectLoadingTodoList,
+  selectLoadingUser,
+} from "../../lib/model/reducers/ui";
 import { getUser, selectUserId } from "../../lib/model/reducers/user";
 import FunForm from "../FunForm/FunForm";
 import ListContent from "./ListContent";
+import Header from "./Header";
 
 const TodoManagerForm = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const todoList = useAppSelector(selectTodoList);
   const loadingTodoList = useAppSelector(selectLoadingTodoList);
+  const loadingUser = useAppSelector(selectLoadingUser);
 
   useEffect(() => {
     dispatch(getUser());
@@ -32,6 +38,8 @@ const TodoManagerForm = () => {
     dispatch(deleteTodoForUser(payload))
   );
 
+  const resetTodoList = useCallback(() => dispatch(resetTodoListForUser()));
+
   return (
     <FunForm initialValues={{ title: "" }} onSubmit={createTodo}>
       {({ values, handleChange, handleSubmit }) => {
@@ -40,12 +48,7 @@ const TodoManagerForm = () => {
             <form className="grow flex flex-col gap-3 justify-between items-stretch px-2 sm:px-10 bg-slate-100">
               <img src={logo} className="self-start h-6 mt-8 mb-4" alt="logo" />
 
-              <h1 className="text-2xl font-bold py-2 pl-3 border-l-8 border-amber-200">
-                To-dos list
-              </h1>
-              <h4 className="border-l-8 mt-2 pl-3">
-                There is still nothing to be done.
-              </h4>
+              <Header loadingUser={loadingUser} todoList={todoList} />
 
               <label className="relative h-10 my-5">
                 <input
@@ -70,6 +73,7 @@ const TodoManagerForm = () => {
                 initialList={todoList}
                 onEditItem={editTodo}
                 onDeleteItem={deleteTodo}
+                onResetList={resetTodoList}
               />
 
               <button

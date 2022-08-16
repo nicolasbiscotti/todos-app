@@ -46,7 +46,7 @@ const uiSlice = createSlice({
   },
 });
 
-export const selectLoading = (state) => state.ui.loadingUser;
+export const selectLoadingUser = (state) => state.ui.loadingUser;
 export const selectLoadingTodoList = (state) => state.ui.loadingTodoList;
 
 export default uiSlice.reducer;
