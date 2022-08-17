@@ -1,13 +1,13 @@
 import { createAction, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  loading: false,
+  showModal: false,
   loadingUser: false,
   loadingTodoList: false,
 };
 
-export const showSpinner = createAction("[ui] show spinner");
-export const hideSpinner = createAction("[ui] hide spinner");
+export const showModal = createAction("[ui] show modal");
+export const hideModal = createAction("[ui] hide modal");
 export const loadingUser = createAction("[ui] loading user");
 export const userLoaded = createAction("[ui] user loaded");
 export const loadingTodoList = createAction("[ui] loading todo list");
@@ -18,13 +18,13 @@ const uiSlice = createSlice({
   initialState,
   extraReducers: (builder) => {
     builder
-      .addCase(showSpinner, (state) => ({
+      .addCase(showModal, (state) => ({
         ...state,
-        loading: true,
+        showModal: true,
       }))
-      .addCase(hideSpinner, (state) => ({
+      .addCase(hideModal, (state) => ({
         ...state,
-        loading: false,
+        showModal: false,
       }))
       .addCase(loadingUser, (state) => ({
         ...state,
@@ -46,6 +46,7 @@ const uiSlice = createSlice({
   },
 });
 
+export const selectShowModal = (state) => state.ui.showModal;
 export const selectLoadingUser = (state) => state.ui.loadingUser;
 export const selectLoadingTodoList = (state) => state.ui.loadingTodoList;
 

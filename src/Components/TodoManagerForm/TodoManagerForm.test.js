@@ -161,6 +161,8 @@ describe("TodoManagerForm Component", () => {
     );
     await uiUser.click(clearButton);
 
+    await uiUser.click(getByRole("button", { name: "Reset list" }));
+
     const heading = await waitFor(() =>
       getByRole("heading", { name: `There is still nothing to be done.` })
     );

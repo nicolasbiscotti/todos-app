@@ -6,7 +6,6 @@ export default function ListContent({
   initialList,
   onEditItem,
   onDeleteItem,
-  onResetList,
 }) {
   if (loadingTodoList) {
     return <div className="grow">loading</div>;
@@ -28,7 +27,6 @@ export default function ListContent({
         initialList={initialList}
         onEditItem={onEditItem}
         onDeleteItem={onDeleteItem}
-        onResetList={onResetList}
       />
     </div>
   );

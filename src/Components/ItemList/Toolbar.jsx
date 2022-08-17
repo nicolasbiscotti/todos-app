@@ -1,8 +1,26 @@
-export default function Toolbar({ resetList }) {
+import { useAppDispatch, useAppSelector } from "../../lib/model/hooks";
+import { resetTodoListForUser } from "../../lib/model/reducers/todos";
+import {
+  hideModal,
+  selectShowModal,
+  showModal,
+} from "../../lib/model/reducers/ui";
+import Modal from "../Modal/Modal";
+
+export default function Toolbar() {
+  const dispatch = useAppDispatch();
+  const modalIsOpen = useAppSelector(selectShowModal);
+
+  const resetTodos = () => {
+    dispatch(resetTodoListForUser());
+    dispatch(hideModal());
+  };
+
   return (
     <div className="flex gap-3">
       <h4>To-dos list</h4>
-      <button type="button" onClick={resetList}>
+
+      <button type="button" onClick={() => dispatch(showModal())}>
         <svg
           className="h-6 w-6 flex-none fill-black stroke-white stroke-2"
           strokeLinecap="round"
@@ -14,6 +32,11 @@ export default function Toolbar({ resetList }) {
         </svg>
         <span className="hidden">clear todo list</span>
       </button>
+
+      {modalIsOpen && (
+        <Modal onAccept={resetTodos} onCancel={() => dispatch(hideModal())} />
+      )}
+
       <div className="grow text-right">
         <select name="" id="" className="bg-white text-right">
           <option value="all">All</option>

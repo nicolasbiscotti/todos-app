@@ -38,8 +38,6 @@ const TodoManagerForm = () => {
     dispatch(deleteTodoForUser(payload))
   );
 
-  const resetTodoList = useCallback(() => dispatch(resetTodoListForUser()));
-
   return (
     <FunForm initialValues={{ title: "" }} onSubmit={createTodo}>
       {({ values, handleChange, handleSubmit }) => {
@@ -73,7 +71,6 @@ const TodoManagerForm = () => {
                 initialList={todoList}
                 onEditItem={editTodo}
                 onDeleteItem={deleteTodo}
-                onResetList={resetTodoList}
               />
 
               <button
