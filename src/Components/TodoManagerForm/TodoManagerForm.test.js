@@ -71,7 +71,7 @@ describe("TodoManagerForm Component", () => {
     });
 
     expect(heading).not.toBeInTheDocument();
-    expect(list).toHaveTextContent(expectedListText);
+    expect(list.textContent).toEqual(expectedListText);
   });
 
   it("should display the new todo when the title is valid", async () => {
@@ -88,14 +88,16 @@ describe("TodoManagerForm Component", () => {
       services: { api: appAPI, storage: cache },
     });
 
-    const uiUser = userEvent.setup();
-    await uiUser.click(getByRole("textbox", { name: "Add a pending task..." }));
-    await uiUser.keyboard(aTodo.title);
-    await uiUser.click(getByRole("button", { name: "Agregar" }));
+    const finalUser = userEvent.setup();
+    await finalUser.click(
+      getByRole("textbox", { name: "Add a pending task..." })
+    );
+    await finalUser.keyboard(aTodo.title);
+    await finalUser.click(getByRole("button", { name: "Agregar" }));
 
     const list = await waitFor(() => getByRole("list"));
 
-    expect(list).toHaveTextContent(expectedListText);
+    expect(list.textContent).toEqual(expectedListText);
     expect(db.getTodosForUser(user.userId)).toContainEqual(aTodo);
   });
 
@@ -105,13 +107,13 @@ describe("TodoManagerForm Component", () => {
 
     const { title, completed } = user.todoList[0];
 
-    const uiUser = userEvent.setup();
+    const finalUser = userEvent.setup();
     const { getByRole } = renderWithProvider(<TodoManagerForm />, {
       services: { api: appAPI, storage: cache },
     });
 
     let checkbox = await waitFor(() => getByRole("checkbox", { name: title }));
-    await uiUser.click(checkbox);
+    await finalUser.click(checkbox);
     checkbox = await waitFor(() => getByRole("checkbox", { name: title }));
 
     if (completed) {
@@ -133,13 +135,13 @@ describe("TodoManagerForm Component", () => {
 
     const expectedTodoList = user.todoList.filter((todo) => todo.id !== id);
 
-    const uiUser = userEvent.setup();
+    const finalUser = userEvent.setup();
     const { getByRole, getByTestId } = renderWithProvider(<TodoManagerForm />, {
       services: { api: appAPI, storage: cache },
     });
     let listItem = await waitFor(() => getByTestId(id));
-    await uiUser.hover(listItem);
-    await uiUser.click(getByRole("button", { name: "delete" }));
+    await finalUser.hover(listItem);
+    await finalUser.click(getByRole("button", { name: "delete" }));
 
     const list = await waitFor(() => getByRole("list"));
 
@@ -151,7 +153,7 @@ describe("TodoManagerForm Component", () => {
     givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(user.todoList);
     givenThatCache(cache).alreadyHasItem("userId").withValue(user.userId);
 
-    const uiUser = userEvent.setup();
+    const finalUser = userEvent.setup();
     const { getByRole } = renderWithProvider(<TodoManagerForm />, {
       services: { api: appAPI, storage: cache },
     });
@@ -159,9 +161,9 @@ describe("TodoManagerForm Component", () => {
     const clearButton = await waitFor(() =>
       getByRole("button", { name: "clear todo list" })
     );
-    await uiUser.click(clearButton);
+    await finalUser.click(clearButton);
 
-    await uiUser.click(getByRole("button", { name: "Reset list" }));
+    await finalUser.click(getByRole("button", { name: "Reset list" }));
 
     const heading = await waitFor(() =>
       getByRole("heading", { name: `There is still nothing to be done.` })
@@ -170,5 +172,45 @@ describe("TodoManagerForm Component", () => {
     expect(heading).toBeInTheDocument();
     expect(getByRole("list")).not.toHaveTextContent();
     expect(db.getTodosForUser(user.userId)).toHaveLength(0);
+  });
+
+  it("should filter by completion", async () => {
+    // const allCompleted = user.todoList.map((todo) => ({
+    //   ...todo,
+    //   completed: true,
+    // }));
+    givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(user.todoList);
+    givenThatCache(cache).alreadyHasItem("userId").withValue(user.userId);
+
+    const finalUser = userEvent.setup();
+    const { getByRole } = renderWithProvider(<TodoManagerForm />, {
+      services: { api: appAPI, storage: cache },
+    });
+
+    const filterButton = await waitFor(() =>
+      getByRole("button", { name: "Filter by" })
+    );
+    
+    const completedList = user.todoList.filter((todo) => todo.completed);
+    const expectedCompleteList = listTextBuilder().items(completedList).build();
+
+    const incompletedList = user.todoList.filter((todo) => !todo.completed);
+    const expectedIncompleteList = listTextBuilder()
+      .items(incompletedList)
+      .build();
+
+    
+
+    await finalUser.click(filterButton);
+    await finalUser.click(getByRole("option", { name: "Completed" }));
+
+    const completedTodos = await waitFor(() => getByRole("list"));
+    expect(completedTodos.textContent).toEqual(expectedCompleteList);
+
+    await finalUser.click(filterButton);
+    await finalUser.click(getByRole("option", { name: "Not completed" }));
+
+    const incompleteTodos = await waitFor(() => getByRole("list"));
+    expect(incompleteTodos.textContent).toEqual(expectedIncompleteList);
   });
 });

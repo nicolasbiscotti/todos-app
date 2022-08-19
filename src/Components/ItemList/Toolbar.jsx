@@ -1,4 +1,5 @@
 import { useAppDispatch, useAppSelector } from "../../lib/model/hooks";
+import { byCompletionOptions } from "../../lib/model/reducers/filters";
 import { resetTodoListForUser } from "../../lib/model/reducers/todos";
 import {
   hideModal,
@@ -6,6 +7,7 @@ import {
   showModal,
 } from "../../lib/model/reducers/ui";
 import Modal from "../Modal/Modal";
+import SelectMenu from "../SelectMenu/SelectMenu";
 
 export default function Toolbar() {
   const dispatch = useAppDispatch();
@@ -17,7 +19,7 @@ export default function Toolbar() {
   };
 
   return (
-    <div className="flex gap-3">
+    <div className="flex items-center gap-3">
       <h4>To-dos list</h4>
 
       <button type="button" onClick={() => dispatch(showModal())}>
@@ -37,12 +39,8 @@ export default function Toolbar() {
         <Modal onAccept={resetTodos} onCancel={() => dispatch(hideModal())} />
       )}
 
-      <div className="grow text-right">
-        <select name="" id="" className="bg-white text-right">
-          <option value="all">All</option>
-          <option value="completed">Completed</option>
-          <option value="not completed">Not completed</option>
-        </select>
+      <div className="grow">
+        <SelectMenu options={byCompletionOptions} />
       </div>
     </div>
   );

@@ -5,7 +5,6 @@ import {
   createTodoForUser,
   deleteTodoForUser,
   editTodoForUser,
-  resetTodoListForUser,
   selectTodoList,
 } from "../../lib/model/reducers/todos";
 import {

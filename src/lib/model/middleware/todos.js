@@ -1,4 +1,5 @@
 import { apiRequest } from "../actions/apiActions";
+import { setFilterByCompletion } from "../reducers/filters";
 import {
   fetchTodosForUser,
   fetchTodosSuccess,
@@ -20,6 +21,9 @@ import {
   resetTodosSuccess,
   resetTodosError,
   resetTodos,
+  filterByCompletion,
+  filterByCompletionSuccess,
+  filterByCompletionError,
 } from "../reducers/todos";
 import { loadingTodoList, todoListLoaded } from "../reducers/ui";
 import { selectUserId } from "../reducers/user";
@@ -257,6 +261,53 @@ export const processResetTodosError =
     }
   };
 
+export const filterByCompletionFlow =
+  ({ api }) =>
+  ({ dispatch, getState }) =>
+  (next) =>
+  (action) => {
+    next(action);
+
+    if (filterByCompletion.match(action)) {
+      const data = {
+        payload: {
+          userId: selectUserId(getState()),
+          completed: action.payload.value !== null ? action.payload.value : "",
+        },
+        request: api.todos.filterByCompletion,
+        onSuccess: filterByCompletionSuccess,
+        onError: filterByCompletionError,
+      };
+      dispatch(apiRequest(data));
+      dispatch(loadingTodoList());
+      dispatch(setFilterByCompletion(action.payload));
+    }
+  };
+
+export const processFilterByCompletionSuccess =
+  () =>
+  ({ dispatch }) =>
+  (next) =>
+  (action) => {
+    next(action);
+
+    if (filterByCompletionSuccess.match(action)) {
+      dispatch(setTodos(action.payload));
+      dispatch(todoListLoaded());
+    }
+  };
+
+export const processFilterByCompletionError =
+  () =>
+  ({ dispatch }) =>
+  (next) =>
+  (action) => {
+    next(action);
+
+    if (filterByCompletionError.match(action)) {
+    }
+  };
+
 export const todosMiddleware = [
   fetchTodosFlow,
   processFetchTodoSuccess,
@@ -273,4 +324,7 @@ export const todosMiddleware = [
   resetTodosFlow,
   processResetTodosSuccess,
   processResetTodosError,
+  filterByCompletionFlow,
+  processFilterByCompletionSuccess,
+  processFilterByCompletionError,
 ];

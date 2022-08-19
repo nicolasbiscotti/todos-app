@@ -32,6 +32,14 @@ export const resetTodosSuccess = createAction("[todos] reset todos success");
 export const resetTodosError = createAction("[todos] reset todos error");
 export const resetTodos = createAction("[todos] reset todos");
 
+export const filterByCompletion = createAction("[todos] filter by completion");
+export const filterByCompletionSuccess = createAction(
+  "[todos] filter by completion success"
+);
+export const filterByCompletionError = createAction(
+  "[todos] filter by completion Error"
+);
+
 const todoSlice = createSlice({
   name: "todos",
   initialState,

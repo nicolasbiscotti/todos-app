@@ -4,7 +4,7 @@ import Toolbar from "./Toolbar";
 
 const TodoList = ({ userId, initialList, onEditItem, onDeleteItem }) => (
   <ItemList {...{ initialList, onEditItem, onDeleteItem }}>
-    {({ items, mouseOverId }) => {
+    {({ items }) => {
       const todoList = items.map((todo) => <Todo key={todo.id} todo={todo} />);
 
       return (
