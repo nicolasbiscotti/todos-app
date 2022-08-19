@@ -1,5 +1,8 @@
 import { apiRequest } from "../actions/apiActions";
-import { setFilterByCompletion } from "../reducers/filters";
+import {
+  selectFilterByCompletion,
+  selectFiltersApplied,
+} from "../reducers/filters";
 import {
   fetchTodosForUser,
   fetchTodosSuccess,
@@ -148,14 +151,20 @@ export const editTodoFlow =
 
 export const processEditTodoSuccess =
   () =>
-  ({ dispatch }) =>
+  ({ dispatch, getState }) =>
   (next) =>
   (action) => {
     next(action);
 
     if (editTodoSuccess.match(action)) {
-      dispatch(editTodo(action.payload));
-      dispatch(todoListLoaded());
+      const filter = selectFilterByCompletion(getState());
+      const filtersApplied = selectFiltersApplied(getState());
+      if (!filtersApplied) {
+        dispatch(editTodo(action.payload));
+        dispatch(todoListLoaded());
+      } else {
+        dispatch(filterByCompletion(filter));
+      }
     }
   };
 
@@ -280,7 +289,6 @@ export const filterByCompletionFlow =
       };
       dispatch(apiRequest(data));
       dispatch(loadingTodoList());
-      dispatch(setFilterByCompletion(action.payload));
     }
   };
 

@@ -1,5 +1,5 @@
 import { useAppSelector } from "../../lib/model/hooks";
-import { byCompletionOptions, selectFilterByCompletionId } from "../../lib/model/reducers/filters";
+import { selectFiltersApplied } from "../../lib/model/reducers/filters";
 import TodoList from "../ItemList/TodoList";
 
 export default function ListContent({
@@ -9,12 +9,12 @@ export default function ListContent({
   onEditItem,
   onDeleteItem,
 }) {
-  const filterId = useAppSelector(selectFilterByCompletionId);
+  const filtersApplied = useAppSelector(selectFiltersApplied);
 
   if (loadingTodoList) {
-    return <div className="grow">loading</div>;
+    return <div className="grow">loading todo list</div>;
   }
-  if (initialList.length === 0 && filterId === byCompletionOptions[0].id) {
+  if (initialList.length === 0 && !filtersApplied) {
     return (
       <div className="grow">
         <ul

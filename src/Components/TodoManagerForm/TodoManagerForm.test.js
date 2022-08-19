@@ -175,42 +175,57 @@ describe("TodoManagerForm Component", () => {
   });
 
   it("should filter by completion", async () => {
-    // const allCompleted = user.todoList.map((todo) => ({
-    //   ...todo,
-    //   completed: true,
-    // }));
-    givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(user.todoList);
+    const allNotCompleted = user.todoList.map((todo) => ({
+      ...todo,
+      completed: false,
+    }));
+    givenThatDB(db).alreadyHasUserId(user.userId).withTodoList(allNotCompleted);
     givenThatCache(cache).alreadyHasItem("userId").withValue(user.userId);
 
     const finalUser = userEvent.setup();
-    const { getByRole } = renderWithProvider(<TodoManagerForm />, {
+    const { getByRole, queryByRole } = renderWithProvider(<TodoManagerForm />, {
       services: { api: appAPI, storage: cache },
     });
 
     const filterButton = await waitFor(() =>
       getByRole("button", { name: "Filter by" })
     );
-    
-    const completedList = user.todoList.filter((todo) => todo.completed);
+
+    const completedList = allNotCompleted.filter((todo) => todo.completed);
     const expectedCompleteList = listTextBuilder().items(completedList).build();
 
-    const incompletedList = user.todoList.filter((todo) => !todo.completed);
+    const incompletedList = allNotCompleted.filter((todo) => !todo.completed);
     const expectedIncompleteList = listTextBuilder()
       .items(incompletedList)
       .build();
-
-    
 
     await finalUser.click(filterButton);
     await finalUser.click(getByRole("option", { name: "Completed" }));
 
     const completedTodos = await waitFor(() => getByRole("list"));
     expect(completedTodos.textContent).toEqual(expectedCompleteList);
+    expect(
+      queryByRole("heading", { name: "There is still nothing to be done." })
+    ).not.toBeInTheDocument();
 
     await finalUser.click(filterButton);
     await finalUser.click(getByRole("option", { name: "Not completed" }));
 
-    const incompleteTodos = await waitFor(() => getByRole("list"));
+    let incompleteTodos = await waitFor(() => getByRole("list"));
     expect(incompleteTodos.textContent).toEqual(expectedIncompleteList);
+
+    const anInclompleteTodo = allNotCompleted[0].title;
+    await finalUser.click(getByRole("checkbox", { name: anInclompleteTodo }));
+
+    incompleteTodos = await waitFor(() => getByRole("list"));
+    expect(incompleteTodos).not.toHaveTextContent(anInclompleteTodo);
+
+    // if clear the todo list after apply filters, it should go away
+    await finalUser.click(getByRole("button", { name: "clear todo list" }));
+    await finalUser.click(getByRole("button", { name: "Reset list" }));
+    const heading = await waitFor(() =>
+      getByRole("heading", { name: `There is still nothing to be done.` })
+    );
+    expect(heading).toBeInTheDocument();
   });
 });

@@ -1,8 +1,15 @@
-export default function Header({ loadingUser, todoList }) {
+import { useAppSelector } from "../../lib/model/hooks";
+import { selectFiltersApplied } from "../../lib/model/reducers/filters";
+
+export default function Header({ loadingUser, loadingTodoList, todoList }) {
+  const filtersApplied = useAppSelector(selectFiltersApplied);
   if (loadingUser) {
     return <div>loading user</div>;
   }
-  if (todoList.length === 0) {
+  if (loadingTodoList) {
+    return;
+  }
+  if (todoList.length === 0 && !filtersApplied) {
     return (
       <>
         <h1 className="text-2xl font-bold py-2 pl-3 border-l-8 border-amber-200">
@@ -14,5 +21,4 @@ export default function Header({ loadingUser, todoList }) {
       </>
     );
   }
-  return;
 }

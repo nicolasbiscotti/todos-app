@@ -45,7 +45,11 @@ const TodoManagerForm = () => {
             <form className="grow flex flex-col gap-3 justify-between items-stretch px-2 sm:px-10 bg-slate-100">
               <img src={logo} className="self-start h-6 mt-8 mb-4" alt="logo" />
 
-              <Header loadingUser={loadingUser} todoList={todoList} />
+              <Header
+                loadingUser={loadingUser}
+                loadingTodoList={loadingTodoList}
+                todoList={todoList}
+              />
 
               <label className="relative h-10 my-5">
                 <input
@@ -53,10 +57,10 @@ const TodoManagerForm = () => {
                   name="title"
                   value={values.title}
                   onChange={handleChange}
-                  className="absolute h-10 bg-slate-100"
+                  className="absolute h-10 bg-slate-100 px-0 border-0 focus:ring-0 focus:border-0"
                 />
                 <span
-                  className={` ${
+                  className={`${
                     values.title === "" || "hidden"
                   } absolute left-0 h-10 leading-10 text-gray-500`}
                 >

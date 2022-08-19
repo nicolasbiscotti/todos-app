@@ -1,4 +1,5 @@
 import { apiMiddleware } from "./api";
+import { filtersMiddleware } from "./filters";
 import { logger } from "./logger";
 import { storageMiddleware } from "./storage";
 import { todosMiddleware } from "./todos";
@@ -9,5 +10,6 @@ export default [
   ...todosMiddleware,
   ...storageMiddleware,
   ...apiMiddleware,
-  // logger,
+  ...filtersMiddleware,
+  logger,
 ];

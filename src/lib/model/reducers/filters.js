@@ -7,6 +7,7 @@ export const byCompletionOptions = [
 ];
 
 const initialState = {
+  filtersApplied: false,
   byCompletion: {
     id: "byCompletion-option-0",
     text: "All",
@@ -14,7 +15,12 @@ const initialState = {
   },
 };
 
-export const setFilterByCompletion = createAction("[filters] set filter");
+export const setFilterByCompletion = createAction(
+  "[filters] set filter by completion"
+);
+export const clearFilterByCompletion = createAction(
+  "[filters] clear filter by completion"
+);
 
 const filterSlice = createSlice({
   name: "filters",
@@ -23,7 +29,13 @@ const filterSlice = createSlice({
     builder
       .addCase(setFilterByCompletion, (state, { payload }) => ({
         ...state,
+        filtersApplied: true,
         byCompletion: payload,
+      }))
+      .addCase(clearFilterByCompletion, (state) => ({
+        ...state,
+        filtersApplied: false,
+        byCompletion: byCompletionOptions[0],
       }))
       .addDefaultCase((state) => state);
   },
@@ -34,5 +46,6 @@ export const selectFilterByCompletionId = (state) =>
 export const selectFilterByCompletionText = (state) =>
   state.filters.byCompletion.text;
 export const selectFilterByCompletion = (state) => state.filters.byCompletion;
+export const selectFiltersApplied = (state) => state.filters.filtersApplied;
 
 export default filterSlice.reducer;
