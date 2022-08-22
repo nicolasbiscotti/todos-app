@@ -223,9 +223,9 @@ describe("TodoManagerForm Component", () => {
     // if clear the todo list after apply filters, it should go away
     await finalUser.click(getByRole("button", { name: "clear todo list" }));
     await finalUser.click(getByRole("button", { name: "Reset list" }));
-    const heading = await waitFor(() =>
-      getByRole("heading", { name: `There is still nothing to be done.` })
-    );
-    expect(heading).toBeInTheDocument();
+    await waitFor(() => getByRole("list"));
+    expect(
+      queryByRole("button", { name: "Filter by" })
+    ).not.toBeInTheDocument();
   });
 });

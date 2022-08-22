@@ -11,5 +11,5 @@ export default [
   ...storageMiddleware,
   ...apiMiddleware,
   ...filtersMiddleware,
-  logger,
+  // logger,
 ];
