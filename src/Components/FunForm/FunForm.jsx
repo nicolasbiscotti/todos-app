@@ -11,6 +11,7 @@ function FunForm({ initialValues, onSubmit, children }) {
     e.preventDefault();
     // validate
     onSubmit(values);
+    setValues((prevState) => ({ ...prevState, title: "" }));
   };
   return children({ values, handleChange, handleSubmit });
 }
